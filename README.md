@@ -5,7 +5,7 @@ Objectif du projet, créer un forum en JS qui s'actualise en temps réel.
 
 ### Fonctionnalités Attendues :
 - Enregistrement.
-- Login.
+- Connexion.
 - Création de posts.
 - Commenter un post.
 - Messages privés.
@@ -38,8 +38,8 @@ Les utiliseurs non connectés ne doivent que voir la page connexion/inscription.
     - Mot de passe
 
 ### Contraintes :
--L'utilisateur peut se connecter en utilisant son pseudo ou son mail avec le mot de passe?
--L'utilisateur doit pouvoir se déconnecter depuis n'importe quelle page du forum.
+- L'utilisateur peut se connecter en utilisant son pseudo ou son mail, avec le mot de passe.
+- L'utilisateur doit pouvoir se déconnecter depuis n'importe quelle page du forum.
 
 ## Posts et commentaires :
 L'utilisateur doit pouvoir :
@@ -56,13 +56,13 @@ Deux sections sont attendues.
 ### Messages :
 - Les messages doivent indiquer la date d'envoi.
 - Les messages doivent indiquer le pseudo de l'envoyeur.
-- L'utilisateur doit recevoir une notification
+- L'utilisateur doit recevoir une notification pour chaque nouveau message
 
 ### Section liste des utilisateurs :
 - Il doit être indiqué si l'utilisateur est connecté ou non.
 - Les utilisateurs avec qui il y a eu les derniers messages échangés doivent êtres présentés en premiers.
     - Si l'utilisateur est nouveau et qu'il n'a pas encore envoyé/reçu de message, la liste des utilisateurs avec qui il peut échanger sera organisée par ordre alphabétique.
-- L'utilisateur doit pouvoir envoyer des messages aux utilisateurs conenctés.
+- L'utilisateur doit pouvoir envoyer des messages aux utilisateurs connectés.
 - La section doit toujours être visible par l'utilisateur.
 
 ### Section zone de messages avec les utilisateurs :
