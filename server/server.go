@@ -14,7 +14,8 @@ func Server(port string) { // Première lettre en majuscule pour que la fonction
 		tmpl, err := template.ParseFiles("../frontend/index.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError) // Affiche sur le site.
-			fmt.Printf("Error Parsing HTML Page: %v", err)             // Affiche sur la console.
+			fmt.Printf("Error Parsing HTML Page: %v \n", err)          // Affiche sur la console.
+			return
 		}
 		// Envoi le fichier HTML au w http.ResponseWriter.
 		// Ce qui l'envoie et l'affiche sur le site.
@@ -25,9 +26,9 @@ func Server(port string) { // Première lettre en majuscule pour que la fonction
 	http.HandleFunc("/mainPage", mainPage)
 
 	// Lancement serveur Go
-	fmt.Printf("Serveur démarré sur le port %s", port)
-	err := http.ListenAndServe(port, nil) // A laisser à la fin, élément bloquant la lecture.
+	fmt.Printf("Serveur démarré sur le port %s \n", port)
+	err := http.ListenAndServe(port, nil) // A laisser à la fin, élément bloquant la lecture des instructions suivantes.
 	if err != nil {
-		fmt.Printf("Error lauching servor : %v", err)
+		fmt.Printf("Error lauching servor : %v \n", err)
 	}
 }

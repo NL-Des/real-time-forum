@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 	"real-time-forum/server" // Ceci permet d'appeler la fonction qui se trouve dans le fichier.
 
 	"github.com/joho/godotenv"
@@ -16,11 +15,11 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	// Attribution du port du serveur.
-	port := os.Getenv("server_port")
+	// port := os.Getenv("server_port")
 	// Attribution du chemin de la database.
 	// pathDB := os.Getenv("path_to_database")
 
 	// Lancement du serveur GO.
-	server.Server(port) // server = nom du package | Server() = nom de la fonction
+	server.Server(":8080") // server = nom du package | Server() = nom de la fonction
 
 }
