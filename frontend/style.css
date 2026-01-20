@@ -1,0 +1,399 @@
+/* ========================================
+   RESET & VARIABLES
+======================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #667eea;
+  --secondary: #764ba2;
+  --bg-dark: #1a1a2e;
+  --bg-light: #16213e;
+  --text-light: #eaeaea;
+  --text-gray: #94a3b8;
+  --accent: #f093fb;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   BASE
+======================================== */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-light) 100%);
+  color: var(--text-light);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1 {
+  margin-top: 1rem;
+  margin-bottom: 4rem;
+  display: flex;
+  justify-content: center;
+  font-size: 4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text; /* Applique le background uniquement sur la forme du text */
+  -webkit-text-fill-color: transparent; /* rend le text transparent pour laisser voir le background à travers */
+  background-clip: text; /* decoupe le background pour qu'il n'apparaisse que sur la forme des lettres*/
+  color: transparent; /* Fallback si webkit ne marche pas */
+  letter-spacing: -1px;
+  align-items: center;
+}
+
+.connection {
+  font-weight: 400;
+  margin-top: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: none;
+  color: white;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.connection:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6);
+  align-items: center;
+}
+
+.connection-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+label {
+  font-weight: 500;
+  font-size: 2rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text; /* Applique le background uniquement sur la forme du text */
+  -webkit-text-fill-color: transparent; /* rend le text transparent pour laisser voir le background à travers */
+  background-clip: text; /* decoupe le background pour qu'il n'apparaisse que sur la forme des lettres*/
+  color: transparent; /* Fallback si webkit ne marche pas */
+  letter-spacing: -1px;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  box-sizing: border-box;
+  color: var(--text-gray);
+}
+
+.create-account {
+  display: flex;
+  flex-direction: column; /* Vertical */
+  align-items: center; /* Centre horizontalement */
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.new-account {
+  font-weight: 400;
+  margin-top: 10px;
+  background: white;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+.new-account:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6);
+  align-items: center;
+}
+/* ========================================
+   FORM REGISTER
+======================================== */
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem; /* espace vertical cohérent */
+  font-size: 1rem; /* taille générale du texte (ajustable) */
+  font-weight: 600;
+  width: 100%;
+  max-width: 920px; /* limite la largeur pour de meilleures proportions */
+  margin: 2rem auto; /* centre le formulaire et ajoute un peu d'air */
+  padding: 2rem; /* espace intérieur */
+  box-sizing: border-box;
+}
+
+/* Ajuste les labels pour être plus proportionnels */
+.register-form label {
+  display: block;
+  font-weight: 600;
+  font-size: 1.05rem; /* plus adapté pour un champ */
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Conteneur double colonnes */
+.register-form .double-item {
+  width: 100%;
+  display: flex;
+  gap: 1.5rem; /* espace horizontal entre colonnes — plus petit et cohérent */
+  align-items: flex-start;
+}
+
+/* Chaque groupe prend une part égale */
+.register-form .double-item .form-group {
+  flex: 1;
+  min-width: 0; /* évite débordement des inputs flex */
+}
+
+/* Inputs et select prennent toute la largeur du form-group */
+.register-form input,
+.register-form select {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  box-sizing: border-box;
+  color: var(--text-gray);
+}
+
+/* Boutons alignés à droite et espacés */
+.button-register-form {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Style des boutons (tu as déjà ces classes, on garde) */
+.creation-account .new-account-comeback {
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+.new-account-comeback {
+  font-weight: 400;
+  margin-top: 10px;
+  background: white;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+.creation-account {
+  font-weight: 400;
+  margin-top: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: none;
+  color: white;
+  border-radius: 5px;
+  padding: 10px;
+}
+.creation-account:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6);
+  align-items: center;
+}
+/* Responsive : empiler les champs sur écrans étroits */
+@media (max-width: 720px) {
+  .register-form {
+    padding: 1rem;
+  }
+  .register-form .double-item {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .button-register-form {
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .creation-account,
+  .new-account-comeback {
+    width: 100%;
+  }
+}
+.new-account-comeback:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6);
+  align-items: center;
+}
+
+/* Style pour les messages d'erreur */
+.error-message {
+  color: #f5576c;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.success-message {
+  color: #4facfe;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+/* ========================================
+   LAST NEWS
+======================================== */
+.last-news {
+  margin: 3rem auto;
+  max-width: 1200px;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ========================================
+   CATEGORIES
+======================================== */
+.categories {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.categories > div {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+/* le ">" cilbe les enfants du premier niveau. alors que sans ">" on cible toutes les div de l'element categories */
+.categories > div:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+}
+
+.categories > div:hover::before {
+  opacity: 0.1;
+}
+
+.cat1 {
+  color: #f093fb;
+}
+
+.cat2 {
+  color: #667eea;
+}
+
+.cat3 {
+  color: #4facfe;
+}
+
+.cat4 {
+  color: #f5576c;
+}
+
+/* ========================================
+   FOOTER
+======================================== */
+footer {
+  margin-top: auto;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-gray);
+  font-size: 0.95rem;
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+@media (max-width: 768px) {
+  header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .first-title {
+    font-size: 1.5rem;
+  }
+
+  .auth {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .Connexion,
+  .Register {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .categories {
+    grid-template-columns: 1fr;
+    padding: 0 1rem;
+  }
+
+  .last-news {
+    margin: 2rem 1rem;
+    font-size: 1.2rem;
+    min-height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .first-title {
+    font-size: 1.3rem;
+  }
+
+  .categories > div {
+    padding: 2rem 1rem;
+    font-size: 1.4rem;
+  }
+}

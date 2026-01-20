@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=wh1, initial-scale=1.0" />
+  <link rel="stylesheet" href="frontend/style.css" />
+  <title>Real time forum</title>
+</head>
+
+<body>
+  <h1 class="first-title">Welcome to the Real time forum</h1>
+
+  <form class="connection-form">
+
+    <div class="form-group">
+      <label for="register-username">Pseudo</label>
+      <input type="text" id="register-username" name="username" placeholder="pseudo ou email" required minlength="6" />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="password" minlength="6" required>
+    </div>
+    </div>
+
+    <button type="submit" class="connection">
+      Connection
+    </button>
+    <div class="create-account">
+      <p>Create account ?</p>
+      <button type="button" class="new-account">Click here</button>
+    </div>
+  </form>
+  <form class="register-form" style="display: none;">
+    <div class="double-item">
+      <div class="form-group">
+        <label for="Nickname">Nickname</label>
+        <input type="text" id="Nickname" name="Nickname" placeholder="Your Nickname" required>
+      </div>
+
+      <div class="form-group">
+        <label for="register-email">Email</label>
+        <input type="email" id="register-email" name="email" placeholder="your@email.com" required>
+      </div>
+    </div>
+    <div class="double-item">
+      <div class="form-group">
+        <label for="Age">Age</label>
+        <input type="number" id="Age" name="Age" placeholder="Your Age" required>
+      </div>
+      <div class="form-group">
+        <label name="Gender" for="Gender">Gender</label>
+        <select id="Gender">
+          <option value="NoValue">---</option>
+          <option value="woman">woman</option>
+          <option value="man">man</option>
+        </select>
+      </div>
+
+    </div>
+    <div class="double-item">
+      <div class="form-group">
+        <label for="FirstName">First Name</label>
+        <input type="text" id="FirstName" name="FirstName" placeholder="Your First Name" required>
+      </div>
+      <div class="form-group">
+        <label for="LastName">Last Name</label>
+        <input type="text" id="LastName" name="LastName" placeholder="Your Last Name" required>
+      </div>
+    </div>
+    <div class="double-item">
+      <div class="form-group">
+        <label for="register-password">Password</label>
+        <input type="password" id="register-password" name="password" placeholder="••••••••" required>
+      </div>
+      <div class="form-group">
+        <label for="register-confirm-password">Confirm Password</label>
+        <input type="password" id="register-confirm-password" name="confirm-password" placeholder="••••••••" required>
+      </div>
+    </div>
+    <div class="button-register-form">
+      <button type="submit" class="creation-account">Sign Up</button>
+      <button type="button" class="new-account-comeback">Come back</button>
+    </div>
+
+
+  </form>
+
+  <footer>Realise by Z01 students</footer>
+</body>
+<script type="module" src="static/js/main.js"></script>
+
+</html>
