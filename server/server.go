@@ -26,7 +26,9 @@ func Server(port string) {
 	}
 	// Quand l'utilisateur arrive, affiche mainPage.
 	mux.HandleFunc("/", mainPage)
-
+	// servir les fichiers static
+	fs := http.FileServer(http.Dir("./frontend"))
+	mux.Handle("/frontend/", http.StripPrefix("/frontend/", fs))
 	// Lancement serveur Go
 	fmt.Printf("Serveur démarré sur le port %s \n", port)
 	fmt.Printf("Page d'accès : http://localhost:8080/ \n")
