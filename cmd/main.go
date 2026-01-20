@@ -20,6 +20,7 @@ func main() {
 	// pathDB := os.Getenv("path_to_database")
 
 	// Lancement du serveur GO.
-	server.Server(":8080") // server = nom du package | Server() = nom de la fonction
+	port := ":8080"
+	server.Server(port) // server = nom du package | Server() = nom de la fonction
 
 }
