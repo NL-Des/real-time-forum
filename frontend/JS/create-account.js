@@ -36,8 +36,9 @@ export function CreateAccount() {
     let confirmPasswordValue = confirmPasswordInput.value;
 
     if (passwordValue !== confirmPasswordValue) {
-      alert("les mots de passe ne correspondent pas");
-      return;
+      return "les mots de passe ne correspondent pas";
+    } else if (genderValue === "") {
+      return "Veuillez sélectionner un genre";
     } else {
       console.log("Nickname: ", nicknameValue);
       console.log("Age : ", ageValue);
