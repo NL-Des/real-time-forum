@@ -20,18 +20,20 @@ func main() {
 		return
 	}
 	// Attribution du port du serveur.
-	// port := os.Getenv("server_port")
+	// port := os.Getenv("SERVER_PORT")
+	port := ":8080" // Inscrit en dur pour les tests.
 	// Attribution du chemin de la database.
-	// pathDB := os.Getenv("path_to_database")
+	// pathDB := os.Getenv("REALTIMEFORUM_DB_PATH")
+	pathDB := "./vault/real_time_forum_database.db" // Inscrit en dur pour les tests.
 
+	// MARK: DB
 	// Lancement de la BDD.
 	// Vérification si la BDD existe déjà.
-
 	// Créer le dossier vault s'il n'existe pas
 	if err := os.MkdirAll("./vault", 0755); err != nil {
 		log.Fatalf("Error creating vault directory: %v", err)
 	}
-	pathDB := "./vault/real_time_forum_database.db"
+
 	var db *sql.DB
 	var err error
 
@@ -49,7 +51,7 @@ func main() {
 	}
 	defer db.Close()
 
+	// MARK: Server
 	// Lancement du serveur GO.
-	port := ":8080"
 	server.Server(port, db)
 }
