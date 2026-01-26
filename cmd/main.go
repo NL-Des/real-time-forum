@@ -39,12 +39,15 @@ func main() {
 
 	_, statErr := os.Stat(pathDB) // Stat repère si le fichier existe, sans le charger.
 	if statErr != nil {
+		// Création de la BDD.
 		fmt.Println("Initialazing Database...")
-		db, err = config.InitDB(pathDB) // Création BDD
+		db, err = config.RunDB(pathDB)
+		db, err = config.InitDB(pathDB, db)
 		fmt.Println("Connection to Database...")
 	} else {
+		// Ouverture de la BDD.
 		fmt.Println("Connection to Database...")
-		db, err = config.RunDB(pathDB) // Lancement BDD
+		db, err = config.RunDB(pathDB)
 	}
 	if err != nil {
 		log.Fatalf("Database error: %v", err)
