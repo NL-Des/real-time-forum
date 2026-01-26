@@ -14,7 +14,7 @@ CREATE TABLE users (
     userOnline INTEGER DEFAULT 0 /* 0 = hors ligne | 1 = en ligne */
     /* Question importante */
     /* Si le user est supprimé, il y a un delete en cascade ? */
-)
+);
 
 /* Contient des comments */
 CREATE TABLE post (
@@ -27,7 +27,7 @@ CREATE TABLE post (
 	CategoryIDs INTEGER,
     FOREIGN KEY(AuthorID) REFERENCES users(id),
     FOREIGN KEY(CategoryIDs) REFERENCES category(ID)
-)
+);
 
 /* Se trouve dans un post */
 CREATE TABLE comments (
@@ -39,7 +39,7 @@ CREATE TABLE comments (
 	UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (PostID) REFERENCES post (ID),
     FOREIGN KEY (AuthorID) REFERENCES users (id)
-)
+);
 
 CREATE TABLE messages (
 	ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,8 +48,8 @@ CREATE TABLE messages (
 	Content TEXT NOT NULL,
 	CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
 	UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (SenderID) REFERENCES users(id),
-)
+    FOREIGN KEY (SenderID) REFERENCES users(id)
+);
 
 CREATE TABLE category (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,

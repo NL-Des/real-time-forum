@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"real-time-forum/categories"
@@ -8,7 +9,7 @@ import (
 
 // Commande de lancement depuis la racine : go run cmd/main.go
 
-func Server(port string) {
+func Server(port string, db *sql.DB) {
 	mux := http.NewServeMux() // Création d'un serveur mux vide.
 
 	// Quand l'utilisateur arrive, affiche mainPage.
