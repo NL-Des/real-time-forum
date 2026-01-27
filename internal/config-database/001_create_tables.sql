@@ -5,7 +5,7 @@ CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     UserName TEXT NOT NULL UNIQUE CHECK(LENGTH(UserName) >= 3),
     Age INTEGER NOT NULL CHECK(Age >= 15), /* CORRIGÉ: >= au lieu de => */
-    Gender TEXT NOT NULL CHECK(Gender IN('M', 'F', 'Other')),
+    Gender TEXT NOT NULL CHECK(Gender IN('Man', 'Woman', 'Other')),
     FirstName TEXT NOT NULL,
     LastName TEXT NOT NULL,
     Email TEXT NOT NULL UNIQUE,
