@@ -3,11 +3,11 @@ et face à des comportements illogiques.  */
 PRAGMA foreign_keys = ON;
 
 /* Table des utilisateurs */
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     UserName TEXT NOT NULL UNIQUE CHECK(LENGTH(UserName) >= 3),
     Age INTEGER NOT NULL CHECK(Age >= 15), /* limite d'âge */
-    Gender TEXT NOT NULL CHECK(Gender IN('M', 'F', 'Other')), /* N'accepte que les termes indiqués */
+    Gender TEXT NOT NULL CHECK(Gender IN('Man', 'Woman', 'Other')), /* N'accepte que les termes indiqués */
     FirstName TEXT NOT NULL,
     LastName TEXT NOT NULL,
     Email TEXT NOT NULL UNIQUE,
@@ -16,7 +16,7 @@ CREATE TABLE users (
 );
 
 /* Contient des comments */
-CREATE TABLE post (
+CREATE TABLE IF NOT EXISTS post (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     Title TEXT NOT NULL,
     Content TEXT NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE post (
 );
 
 /* Se trouve dans un post */
-CREATE TABLE comments (
+CREATE TABLE IF NOT EXISTS comments (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,    
     PostID INTEGER NOT NULL,
     AuthorID TEXT NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE comments (
 );
 
 /* Table des messages du websocket */
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     SenderID TEXT NOT NULL,
     ReceiverID TEXT NOT NULL,
@@ -50,13 +50,13 @@ CREATE TABLE messages (
     FOREIGN KEY (ReceiverID) REFERENCES users(UserName)
 );
 
-CREATE TABLE category (
+CREATE TABLE IF NOT EXISTS category (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     Name TEXT NOT NULL UNIQUE
 );
 
 /* Table de liaison entre les tables "category" et "post" */
-CREATE TABLE post_categories (
+CREATE TABLE IF NOT EXISTS post_categories (
     PostID INTEGER NOT NULL, /* Colonne 1 */
     CategoryID INTEGER NOT NULL, /*  Colonne 2 */
     PRIMARY KEY (PostID, CategoryID), /* Clé primaire composée des colonnes précédentes */

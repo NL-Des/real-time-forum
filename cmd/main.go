@@ -43,11 +43,13 @@ func main() {
 		fmt.Println("Initialazing Database...")
 		db, err = config.RunDB(pathDB)
 		db, err = config.InitDB(pathDB, db)
+		config.InspectDbIntegrity(db)
 		fmt.Println("Connection to Database...")
 	} else {
 		// Ouverture de la BDD.
 		fmt.Println("Connection to Database...")
 		db, err = config.RunDB(pathDB)
+		config.InspectDbIntegrity(db)
 	}
 	if err != nil {
 		log.Fatalf("Database error: %v", err)
