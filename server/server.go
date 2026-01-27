@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
-	"real-time-forum/categories"
+	"real-time-forum/users"
 )
 
 // Commande de lancement depuis la racine : go run cmd/main.go
@@ -13,7 +13,7 @@ func Server(port string, db *sql.DB) {
 	mux := http.NewServeMux() // Création d'un serveur mux vide.
 
 	// Quand l'utilisateur arrive, affiche mainPage.
-	mux.HandleFunc("/", categories.MainPage)
+	mux.HandleFunc("/", users.MainPage)
 	// servir les fichiers static
 	fs := http.FileServer(http.Dir("./frontend"))
 	mux.Handle("/frontend/", http.StripPrefix("/frontend/", fs))

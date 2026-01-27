@@ -3,14 +3,15 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=wh1, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="frontend/style.css" />
   <title>Real time forum</title>
 </head>
 
 <body>
   <h1 class="first-title">Welcome to the Real time forum</h1>
-
+  <div id="error-message" class="error-message"></div>
+  <div id="success-message" class="success-message"></div>
   <form class="connection-form">
 
     <div class="form-group">
@@ -31,7 +32,7 @@
       <button type="button" class="new-account">Click here</button>
     </div>
   </form>
-  <form class="register-form" style="display: none;">
+  <form id="register-form" class="register-form" method="post" style="display: none;">
     <div class="double-item">
       <div class="form-group">
         <label for="Nickname">Nickname</label>
@@ -40,7 +41,7 @@
 
       <div class="form-group">
         <label for="register-email">Email</label>
-        <input type="email" id="register-email" name="email" placeholder="your@email.com" required>
+        <input type="email" id="register-email" name="Email" placeholder="your@email.com" required>
       </div>
     </div>
     <div class="double-item">
@@ -50,10 +51,11 @@
       </div>
       <div class="form-group">
         <label name="Gender" for="Gender">Gender</label>
-        <select id="Gender">
-          <option value=""></option>
-          <option value="woman">woman</option>
-          <option value="man">man</option>
+        <select id="Gender" name="Gender">
+          <option value="Default">---</option>
+          <option value="Woman">woman</option>
+          <option value="Man">man</option>
+          <option value="Other">Other</option>
         </select>
       </div>
 
@@ -71,13 +73,13 @@
     <div class="double-item">
       <div class="form-group">
         <label for="register-password" minlength="6">Password</label>
-        <input type="password" id="register-password" name="password" placeholder="••••••••" required
-          autocomplete="register-password">
+        <input type="password" id="register-password" name="Password" placeholder="••••••••" required
+          autocomplete="new-password">
       </div>
       <div class="form-group">
         <label for="register-confirm-password" minlength="6">Confirm Password</label>
-        <input type="password" id="register-confirm-password" name="confirm-password" placeholder="••••••••" required
-          autocomplete="register-confirm-password">
+        <input type="password" id="register-confirm-password" name="Confirm-Password" placeholder="••••••••" required
+          autocomplete="new-password">
       </div>
     </div>
     <div class="button-register-form">
