@@ -1,5 +1,3 @@
-/* C'est une sécurité face à la suppression sauvage
-et face à des comportements illogiques.  */
 PRAGMA foreign_keys = ON;
 
 /* Table des utilisateurs */
