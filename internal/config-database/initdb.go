@@ -2,6 +2,7 @@ package config
 
 import (
 	"database/sql"
+	"fmt"
 
 	"log"
 
@@ -22,15 +23,30 @@ func RunDB(pathDB string) {
 }
 
 // Création de la BDD si elle n'existe pas.
-func InitDB(pathDB string) {
+func InitDB(pathDB string, schemaSQL string) (*sql.DB, error) {
 	// Ouverture de la BDD
+	// Exécuter le schéma SQL complet
+
+	// Ouvrir/créer la base de données
 	db, err := sql.Open("sqlite3", pathDB)
 	if err != nil {
-		log.Fatal("Error opening database :", err)
+		fmt.Println("Erreur lors de l'ouverture de la base de données:", err)
+		return nil, err
 	}
-	// Vérification de la connexion, car sql.Open ne le fais pas.
+
+	// Vérifier la connexion
 	if err = db.Ping(); err != nil {
-		log.Fatal("Error connecting to database", err)
+		db.Close()
+		fmt.Println("Erreur de connexion à la base de données:", err)
+		return nil, err
 	}
-	// Création de la BDD à partir des différentes tables.
+	_, err = db.Exec(string(schemaSQL))
+	if err != nil {
+		db.Close()
+		fmt.Println("Erreur lors de l'exécution du schéma SQL:", err)
+		return nil, err
+	}
+
+	fmt.Println("Base de données créée avec succès!")
+	return db, nil
 }

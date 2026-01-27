@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"os"
+	"real-time-forum/internal/config-database"
 	"real-time-forum/server" // Ceci permet d'appeler la fonction qui se trouve dans le fichier.
 
 	"github.com/joho/godotenv"
@@ -21,13 +23,19 @@ func main() {
 
 	// Lancement de la BDD.
 	// Vérification si la BDD existe déjà.
-	/* pathDB := "internal/config-database/initdb.go"
+	pathDB := "internal/config-database/BDD.db"
+	schemaSQLPath := "internal/config-database/001_create_tables.sql"
 	_, err := os.ReadFile(pathDB)
 	if err != nil {
-		config.InitDB(pathDB) // Création BDD
+		// Lire le contenu du fichier SQL
+		schemaSQL, readErr := os.ReadFile(schemaSQLPath)
+		if readErr != nil {
+			log.Fatal("Error reading schema SQL file:", readErr)
+		}
+		config.InitDB(pathDB, string(schemaSQL)) // Création BDD
 	} else {
 		config.RunDB(pathDB) // Lancement BDD
-	} */
+	}
 
 	// Lancement du serveur GO.
 	port := ":8080"
