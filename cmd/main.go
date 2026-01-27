@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"real-time-forum/internal/config-database"
@@ -15,30 +17,44 @@ func main() {
 	errEnv := godotenv.Load()
 	if errEnv != nil {
 		log.Fatal("Error loading .env file")
+		return
 	}
 	// Attribution du port du serveur.
-	// port := os.Getenv("server_port")
+	// port := os.Getenv("SERVER_PORT")
+	port := ":8080" // Inscrit en dur pour les tests.
 	// Attribution du chemin de la database.
-	// pathDB := os.Getenv("path_to_database")
+	// pathDB := os.Getenv("REALTIMEFORUM_DB_PATH")
+	pathDB := "./vault/real_time_forum_database.db" // Inscrit en dur pour les tests.
 
+	// MARK: DB
 	// Lancement de la BDD.
 	// Vérification si la BDD existe déjà.
-	pathDB := "internal/config-database/BDD.db"
-	schemaSQLPath := "internal/config-database/001_create_tables.sql"
-	_, err := os.ReadFile(pathDB)
-	if err != nil {
-		// Lire le contenu du fichier SQL
-		schemaSQL, readErr := os.ReadFile(schemaSQLPath)
-		if readErr != nil {
-			log.Fatal("Error reading schema SQL file:", readErr)
-		}
-		config.InitDB(pathDB, string(schemaSQL)) // Création BDD
-	} else {
-		config.RunDB(pathDB) // Lancement BDD
+	// Créer le dossier vault s'il n'existe pas
+	if err := os.MkdirAll("./vault", 0755); err != nil {
+		log.Fatalf("Error creating vault directory: %v", err)
 	}
 
-	// Lancement du serveur GO.
-	port := ":8080"
-	server.Server(port) // server = nom du package | Server() = nom de la fonction
+	var db *sql.DB
+	var err error
 
+	_, statErr := os.Stat(pathDB) // Stat repère si le fichier existe, sans le charger.
+	if statErr != nil {
+		// Création de la BDD.
+		fmt.Println("Initialazing Database...")
+		db, err = config.RunDB(pathDB)
+		db, err = config.InitDB(pathDB, db)
+		fmt.Println("Connection to Database...")
+	} else {
+		// Ouverture de la BDD.
+		fmt.Println("Connection to Database...")
+		db, err = config.RunDB(pathDB)
+	}
+	if err != nil {
+		log.Fatalf("Database error: %v", err)
+	}
+	defer db.Close()
+
+	// MARK: Server
+	// Lancement du serveur GO.
+	server.Server(port, db)
 }
