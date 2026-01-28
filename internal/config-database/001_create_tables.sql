@@ -11,8 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     FirstName TEXT NOT NULL,
     LastName TEXT NOT NULL,
     Email TEXT NOT NULL UNIQUE,
-    Password TEXT NOT NULL CHECK(LENGTH(Password) >= 8), /* Taille minimale du mdp */
-    userOnline INTEGER DEFAULT 0 /* 0 = hors ligne | 1 = en ligne */
+    Password TEXT NOT NULL CHECK(LENGTH(Password) >= 8) /* Taille minimale du mdp */
 );
 
 /* Contient des comments */
@@ -20,34 +19,36 @@ CREATE TABLE IF NOT EXISTS post (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     Title TEXT NOT NULL,
     Content TEXT NOT NULL,
-    AuthorID TEXT NOT NULL,
+    AuthorID INTEGER NOT NULL,
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(AuthorID) REFERENCES users(UserName)
+    UpdatedAt DATETIME,
+    FOREIGN KEY(AuthorID) REFERENCES users(id)
 );
 
 /* Se trouve dans un post */
 CREATE TABLE IF NOT EXISTS comments (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,    
     PostID INTEGER NOT NULL,
-    AuthorID TEXT NOT NULL,
+    AuthorID INTEGER NOT NULL,
     Content TEXT NOT NULL,
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt DATETIME,
     FOREIGN KEY (PostID) REFERENCES post (ID),
-    FOREIGN KEY (AuthorID) REFERENCES users (UserName)
+    FOREIGN KEY (AuthorID) REFERENCES users (id)
 );
 
 /* Table des messages du websocket */
 CREATE TABLE IF NOT EXISTS messages (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    SenderID TEXT NOT NULL,
-    ReceiverID TEXT NOT NULL,
+    SenderID INTEGER NOT NULL,
+    ReceiverID INTEGER NOT NULL,
     Content TEXT NOT NULL,
+    WriteAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ReadAt DATETIME,
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (SenderID) REFERENCES users(UserName),
-    FOREIGN KEY (ReceiverID) REFERENCES users(UserName)
+    UpdatedAt DATETIME,
+    FOREIGN KEY (SenderID) REFERENCES users(id),
+    FOREIGN KEY (ReceiverID) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS category (
@@ -63,4 +64,15 @@ CREATE TABLE IF NOT EXISTS post_categories (
 	/* Grâce à la clé primaire, on ne peut pas avoir plusieurs fois la même catégorie pour un même post. */
     FOREIGN KEY (PostID) REFERENCES post(ID),
     FOREIGN KEY (CategoryID) REFERENCES category(ID)
+);
+
+CREATE TABLE IF NOT EXISTS session (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserID INTEGER NOT NULL,
+    Token TEXT NOT NULL UNIQUE,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP, /* Moment de la connexion */
+    ExpiresAt DATETIME NOT NULL, /* 24 heures ? */
+    UserAgent TEXT,
+    IP TEXT,
+    FOREIGN KEY (UserID) REFERENCES users(id)
 );

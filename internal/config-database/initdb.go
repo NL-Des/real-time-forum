@@ -14,11 +14,11 @@ func RunDB(pathDB string) (*sql.DB, error) {
 	// Ouverture ou création de la BDD
 	db, err := sql.Open("sqlite3", pathDB)
 	if err != nil {
-		log.Fatalln("Error opening database : %w", err)
+		log.Fatalf("Error opening database : %v", err)
 	}
 	// Vérification de la connexion, car sql.Open ne le fais pas.
 	if err = db.Ping(); err != nil {
-		log.Fatalln("Error connecting to database : %w", err)
+		log.Fatalf("Error connecting to database : %v", err)
 	}
 	return db, nil
 }
@@ -30,12 +30,12 @@ func InitDB(pathDB string, db *sql.DB) (*sql.DB, error) {
 	// Ouverture du fichier.
 	testTables, err := os.ReadFile("./internal/config-database/001_create_tables.sql")
 	if err != nil {
-		log.Fatalln("Error with testTables in internal/config-database/001_create_tables.sql : %w", err)
+		log.Fatalf("Error with testTables in internal/config-database/001_create_tables.sql : %v", err)
 	}
 	// Ecriture dans le BDD.
 	_, err = db.Exec(string(testTables))
 	if err != nil {
-		log.Fatalln("Error writing testTables in DB : %w", err)
+		log.Fatalf("Error writing testTables in DB : %v", err)
 	}
 	return db, nil
 }
