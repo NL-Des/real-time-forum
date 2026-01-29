@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"real-time-forum/auth"
 	"real-time-forum/users"
 )
 
@@ -11,6 +12,8 @@ import (
 
 func Server(port string, db *sql.DB) {
 	mux := http.NewServeMux() // Création d'un serveur mux vide.
+
+	mux.HandleFunc("/auth/login", auth.LoginHandler(db))
 
 	// Quand l'utilisateur arrive, affiche mainPage.
 	mux.HandleFunc("/", users.MainPage)
