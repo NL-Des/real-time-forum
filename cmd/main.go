@@ -1,7 +1,11 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
+	"os"
+	"real-time-forum/internal/config-database"
 	"real-time-forum/server" // Ceci permet d'appeler la fonction qui se trouve dans le fichier.
 
 	"github.com/joho/godotenv"
@@ -13,24 +17,46 @@ func main() {
 	errEnv := godotenv.Load()
 	if errEnv != nil {
 		log.Fatal("Error loading .env file")
+		return
 	}
 	// Attribution du port du serveur.
-	// port := os.Getenv("server_port")
+	// port := os.Getenv("SERVER_PORT")
+	port := ":8080" // Inscrit en dur pour les tests.
 	// Attribution du chemin de la database.
-	// pathDB := os.Getenv("path_to_database")
+	// pathDB := os.Getenv("REALTIMEFORUM_DB_PATH")
+	pathDB := "./vault/real_time_forum_database.db" // Inscrit en dur pour les tests.
 
+	// MARK: DB
 	// Lancement de la BDD.
 	// Vérification si la BDD existe déjà.
-	/* pathDB := "internal/config-database/initdb.go"
-	_, err := os.ReadFile(pathDB)
-	if err != nil {
-		config.InitDB(pathDB) // Création BDD
+	// Créer le dossier vault s'il n'existe pas
+	if err := os.MkdirAll("./vault", 0755); err != nil {
+		log.Fatalf("Error creating vault directory: %v", err)
+	}
+
+	var db *sql.DB
+	var err error
+
+	_, statErr := os.Stat(pathDB) // Stat repère si le fichier existe, sans le charger.
+	if statErr != nil {
+		// Création de la BDD.
+		fmt.Println("Initialazing Database...")
+		db, err = config.RunDB(pathDB)
+		db, err = config.InitDB(pathDB, db)
+		config.InspectDbIntegrity(db)
+		fmt.Println("Connection to Database...")
 	} else {
-		config.RunDB(pathDB) // Lancement BDD
-	} */
+		// Ouverture de la BDD.
+		fmt.Println("Connection to Database...")
+		db, err = config.RunDB(pathDB)
+		config.InspectDbIntegrity(db)
+	}
+	if err != nil {
+		log.Fatalf("Database error: %v", err)
+	}
+	defer db.Close()
 
+	// MARK: Server
 	// Lancement du serveur GO.
-	port := ":8080"
-	server.Server(port) // server = nom du package | Server() = nom de la fonction
-
+	server.Server(port, db)
 }

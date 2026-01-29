@@ -3,14 +3,15 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=wh1, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="frontend/style.css" />
   <title>Real time forum</title>
 </head>
 
 <body>
   <h1 class="first-title">Welcome to the Real time forum</h1>
-
+  <div id="error-message" class="error-message"></div>
+  <div id="success-message" class="success-message"></div>
   <form class="connection-form">
 
     <div class="form-group">
@@ -18,7 +19,7 @@
       <input type="text" id="register-username" name="username" placeholder="pseudo ou email" required minlength="6" />
     </div>
     <div class="form-group">
-      <label for="password">Password</label>
+      <label for="password" minlength="6">Password</label>
       <input type="password" id="password" name="password" placeholder="password" minlength="6" required>
     </div>
     </div>
@@ -31,7 +32,7 @@
       <button type="button" class="new-account">Click here</button>
     </div>
   </form>
-  <form class="register-form" style="display: none;">
+  <form id="register-form" class="register-form" method="post" style="display: none;">
     <div class="double-item">
       <div class="form-group">
         <label for="Nickname">Nickname</label>
@@ -40,20 +41,21 @@
 
       <div class="form-group">
         <label for="register-email">Email</label>
-        <input type="email" id="register-email" name="email" placeholder="your@email.com" required>
+        <input type="email" id="register-email" name="Email" placeholder="your@email.com" required>
       </div>
     </div>
     <div class="double-item">
       <div class="form-group">
         <label for="Age">Age</label>
-        <input type="number" id="Age" name="Age" placeholder="Your Age" required>
+        <input type="number" id="Age" name="Age" placeholder="Your Age" min="0" required>
       </div>
       <div class="form-group">
         <label name="Gender" for="Gender">Gender</label>
-        <select id="Gender">
-          <option value="NoValue">---</option>
-          <option value="woman">woman</option>
-          <option value="man">man</option>
+        <select id="Gender" name="Gender">
+          <option value="Default">---</option>
+          <option value="Woman">woman</option>
+          <option value="Man">man</option>
+          <option value="Other">Other</option>
         </select>
       </div>
 
@@ -70,12 +72,14 @@
     </div>
     <div class="double-item">
       <div class="form-group">
-        <label for="register-password">Password</label>
-        <input type="password" id="register-password" name="password" placeholder="••••••••" required>
+        <label for="register-password" minlength="6">Password</label>
+        <input type="password" id="register-password" name="Password" placeholder="••••••••" required
+          autocomplete="new-password">
       </div>
       <div class="form-group">
-        <label for="register-confirm-password">Confirm Password</label>
-        <input type="password" id="register-confirm-password" name="confirm-password" placeholder="••••••••" required>
+        <label for="register-confirm-password" minlength="6">Confirm Password</label>
+        <input type="password" id="register-confirm-password" name="Confirm-Password" placeholder="••••••••" required
+          autocomplete="new-password">
       </div>
     </div>
     <div class="button-register-form">
@@ -85,6 +89,12 @@
 
 
   </form>
+  <div class="forum-section" style="display: none;">
+    <h2 id="welcome-message"></h2>
+    <p>Vous êtes connecté au forum.</p>
+    <button id="logout">Déconnexion</button>
+  </div>
+
 
   <footer>Realise by Z01 students</footer>
 </body>
