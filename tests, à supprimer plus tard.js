@@ -7,7 +7,7 @@
      */
 
 // Exemple de websocket simple par Copilot
-    // Serveur pour le websocket
+// Serveur pour le websocket
 // server.js
 import { WebSocketServer } from "ws";
 
@@ -30,4 +30,4 @@ wss.on("connection", (socket) => {
 
 console.log("Serveur WebSocket sur ws://localhost:8080");
 
-// 
+//

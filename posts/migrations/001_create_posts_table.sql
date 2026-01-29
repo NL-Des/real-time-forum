@@ -2,8 +2,10 @@ CREATE TABLE posts {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
-    category_id INT NOT NULL
-    created_at TEXT DEFAULT (CURRENT_TIMESTAMP)
+    author_id INTEGER,
+    created_at TEXT DEFAULT (CURRENT_TIMESTAMP),
+    updated_at TEXT DEFAULT (CURRENT_TIMESTAMP),
 };
 
--- ajouter foreign key category_id
+-- table de liaison pour les posts et les catégories, 
+-- pour répondre à l'impossibilité d'entrer une slice d'int dans un champ ? ---

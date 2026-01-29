@@ -1,18 +1,13 @@
 package posts
 
 import (
-	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
 )
 
-func NewPostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+func NewPostHandler(w http.ResponseWriter, r *http.Request) {
 	var newPost Post
-	referer := r.Referer()
-	if referer == "" {
-		referer = "/"
-	}
 
 	// -- récupération données --
 	if r.Method == "POST" {
@@ -22,12 +17,14 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		}
 	}
 
+	log.Println(newPost)
 	// -- gestion d'erreurs --
 	// ajouter verif post existant
 
 	if err := IsValid(newPost); err != nil {
 		log.Println("<NewPostHandler> Error invalid post: ", err)
 		RespondError(w, http.StatusBadRequest, err)
+		return
 	}
 
 	// -- sauvegarde db --
@@ -35,16 +32,19 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if err := SavePost(db, &newPost); err != nil {
 		log.Println("<NewPostHandler> Error cannot save post: ", err)
 		RespondError(w, http.StatusInternalServerError, err)
+		return
 	}
 
-	//notif post ajouté
+	// --- notification post ajouté ---
 	log.Println("New post saved into db")
-	http.Redirect(w, r, referer, http.StatusSeeOther)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "post created",
+	})
 }
 
-//Prochaine étape : faire un post.js pour vérifier la bonne récéption des données ici
-
-// Fonction renvoi message d'erreur dans le frontq
+// Fonction renvoi message d'erreur au front
 func RespondError(w http.ResponseWriter, status int, err error) {
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusBadRequest)

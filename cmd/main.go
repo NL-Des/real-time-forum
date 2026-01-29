@@ -19,6 +19,16 @@ func main() {
 	// Attribution du chemin de la database.
 	// pathDB := os.Getenv("path_to_database")
 
+	// Lancement de la BDD.
+	// Vérification si la BDD existe déjà.
+	/* pathDB := "internal/config-database/initdb.go"
+	_, err := os.ReadFile(pathDB)
+	if err != nil {
+		config.InitDB(pathDB) // Création BDD
+	} else {
+		config.RunDB(pathDB) // Lancement BDD
+	} */
+
 	// Lancement du serveur GO.
 	port := ":8080"
 	server.Server(port) // server = nom du package | Server() = nom de la fonction
