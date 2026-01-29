@@ -15,7 +15,7 @@ func Server(port string, db *sql.DB) {
 	mux := http.NewServeMux() // Création d'un serveur mux vide.
 
 	mux.HandleFunc("/auth/login", auth.LoginHandler(db))
-	mux.HandleFunc("/newpost", posts.NewPostHandler)
+	mux.HandleFunc("/post", posts.NewPostHandler(db))
 
 	// Quand l'utilisateur arrive, affiche mainPage.
 	mux.HandleFunc("/", users.MainPage)
