@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 )
 
 // Json reçu depuis le frontend
@@ -36,7 +37,7 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		}
 
 		// Vérification des identifiants avec authenticator.go
-		ok, err := CheckCredentials(db, req.Login, req.Password)
+		ok, userID, err := CheckCredentials(db, req.Login, req.Password)
 		if err != nil {
 			http.Error(w, "Bad request", http.StatusBadRequest)
 			log.Println("DB error:", err)
@@ -46,6 +47,21 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		res := LoginResponse{}
 
 		if ok {
+			// Création de la session
+			token, err := CreateSession(db, userID)
+			if err != nil {
+				http.Error(w, "Impossible de créer a session", http.StatusInternalServerError)
+				return
+			}
+
+			http.SetCookie(w, &http.Cookie{
+				Name:     "session_token",
+				Value:    token,
+				Expires:  time.Now().Add(24 * time.Hour),
+				HttpOnly: true,
+				Path:     "/",
+			})
+
 			res.Success = true
 			res.User.Nickname = req.Login
 		} else {
