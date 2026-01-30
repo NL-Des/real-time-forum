@@ -32,10 +32,19 @@ func InitDB(pathDB string, db *sql.DB) (*sql.DB, error) {
 	if err != nil {
 		log.Fatalf("Error with testTables in internal/config-database/001_create_tables.sql : %v", err)
 	}
-	// Ecriture dans le BDD.
+	// Ecriture des tables dans la BDD.
 	_, err = db.Exec(string(testTables))
 	if err != nil {
 		log.Fatalf("Error writing testTables in DB : %v", err)
+	}
+	// Importation des informations de bases de la BDD (Catégories,...)
+	seedTables, err := os.ReadFile("./internal/config-database/002_seed.sql")
+	if err != nil {
+		log.Fatalf("Error with seedTables in internal/config-database/002_seed.sql : %v", err)
+	}
+	_, err = db.Exec(string(seedTables))
+	if err != nil {
+		log.Fatalf("Error writing seedTables in DB : %v", err)
 	}
 	return db, nil
 }
