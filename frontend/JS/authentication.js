@@ -1,61 +1,60 @@
-import { showApp } from "./layout.js";
+import {showApp} from "./layout.js";
 
 export function Authentication() {
-	const connectionForm = document.querySelector(".connection-form");
-	console.log("form récup");
+  const connectionForm = document.querySelector(".connection-form");
+  console.log("form récup");
 
-	connectionForm.addEventListener("submit", (e) => {
-		e.preventDefault();
+  connectionForm.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-		const username = document.getElementById("register-username").value;
-		const password = document.getElementById("password").value;
+    const username = document.getElementById("register-username").value;
+    const password = document.getElementById("password").value;
 
-		console.log("username et ppswd recup");
+    console.log("username et ppswd recup");
 
-		fetch("/auth/login", {
-			// envoie la requête au serveur sur la route /auth/login
-			method: "POST", // on envoie des données
-			headers: {
-				"Content-Type": "application/json", // le serveur sait qu’on envoie du JSON
-			},
-			body: JSON.stringify({
-				// on transforme nos valeurs JS en JSON
-				username: username,
-				password: password,
-			}),
-		})
-			.then((response) => response.json()) // le serveur renvoie du JSON, on le transforme en objet JS
-			.then((data) => {
-				// Gestion de la réponse (succès ou erreur)
-				console.log("Réponse serveur :", data);
-				if (data.success) {
-					showApp();
+    fetch("/auth/login", {
+      // envoie la requête au serveur sur la route /auth/login
+      method: "POST", // on envoie des données
+      headers: {
+        "Content-Type": "application/json", // le serveur sait qu’on envoie du JSON
+      },
+      body: JSON.stringify({
+        // on transforme nos valeurs JS en JSON
+        username: username,
+        password: password,
+      }),
+    })
+      .then((response) => response.json()) // le serveur renvoie du JSON, on le transforme en objet JS
+      .then((data) => {
+        // Gestion de la réponse (succès ou erreur)
+        console.log("Réponse serveur :", data);
+        if (data.success) {
+          showApp();
 
-  					const registerForm = document.querySelector(".register-form");
-  					const forumSection = document.querySelector(".forum-section");
-  					const logoutBtn = document.getElementById("logoutBtn");
-  					const welcomeMessage = document.getElementById("welcome-message");
+          const registerForm = document.querySelector(".register-form");
+          const forumSection = document.querySelector(".forum-section");
+          const logoutBtn = document.getElementById("logoutBtn");
+          const welcomeMessage = document.getElementById("welcome-message");
 
-					// Masquer les formulaires
-					// Afficher la section forum
-					connectionForm.style.display = "none";
-  					registerForm.style.display = "none";
-  					forumSection.style.display = "block";
+          // Masquer les formulaires
+          // Afficher la section forum
+          connectionForm.style.display = "none";
+          registerForm.style.display = "none";
+          forumSection.style.display = "block";
 
-					// Mettre le pseudo dans le message
-					welcomeMessage.textContent = `Bienvenue, ${data.user.nickname} !`;
+          // Mettre le pseudo dans le message
+          welcomeMessage.textContent = `Bienvenue, ${data.user.nickname} !`;
+        } else {
+          alert("Connexion échouée !");
+        }
+      })
+      .catch((error) => {
+        // attrape les erreurs réseau
+        console.log("Erreur réseau :", error);
+      });
 
-				} else {
-					alert("Connexion échouée !");
-				}
-			})
-			.catch((error) => {
-				// attrape les erreurs réseau
-				console.log("Erreur réseau :", error);
-			});
-
-		console.log("Username :", username, "Password :", password);
-	});
+    console.log("Username :", username, "Password :", password);
+  });
 }
 
 export function Logout() {
@@ -67,8 +66,7 @@ export function Logout() {
 
   forumSection.style.display = "none";
   appContainer.style.display = "none";
-  authContainer.style.display = "flex";
+  authContainer.style.display = "block";
   connectionForm.style.display = "flex";
   registerForm.style.display = "none";
 }
-

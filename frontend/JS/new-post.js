@@ -1,16 +1,16 @@
-import { main, showApp } from "./layout.js";
+import {main, showApp} from "./layout.js";
 
 let isUsed = false;
 
 function renderCreatePost() {
-	console.log("affichage forumalaire post");
+  console.log("affichage forumalaire post");
 
-	if (isUsed === true) {
-		return;
-	}
-	isUsed = true;
+  if (isUsed === true) {
+    return;
+  }
+  isUsed = true;
 
-	main.innerHTML = `
+  main.innerHTML = `
     <h2>New post</h2>
     <form id="post-form">
       <input name="title" placeholder="Title" required />
@@ -30,46 +30,45 @@ function renderCreatePost() {
     </form>
   `;
 
-	document
-		.getElementById("post-form")
-		.addEventListener("submit", handleCreatePost);
+  document
+    .getElementById("post-form")
+    .addEventListener("submit", handleCreatePost);
 }
 
 function getSelectedCategories(form) {
-	const checked = form.querySelectorAll('input[name="category"]:checked');
-	return Array.from(checked).map((cb) => Number(cb.value));
+  const checked = form.querySelectorAll('input[name="category"]:checked');
+  return Array.from(checked).map((cb) => Number(cb.value));
 }
 
 async function handleCreatePost(e) {
-	isUsed = false;
-	e.preventDefault();
-	console.log("handleCreatePost");
+  isUsed = false;
+  e.preventDefault();
+  console.log("handleCreatePost");
 
-	const form = e.target;
+  const form = e.target;
 
-	const data = {
-		title: form.title.value,
-		content: form.content.value,
-		authorid: 1,
-		category_ids: getSelectedCategories(form),
-	};
+  const data = {
+    title: form.title.value,
+    content: form.content.value,
+    authorid: 1,
+    category_ids: getSelectedCategories(form),
+  };
+  const res = await fetch("/post", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data),
+  });
 
-	const res = await fetch("/post", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(data),
-	});
+  console.log("fetch fait");
 
-	console.log("fetch fait");
+  const result = await res.json();
 
-	const result = await res.json();
-
-	if (!res.ok) {
-		document.getElementById("error").textContent = result.error;
-	} else {
-		alert("Post créé !");
-		showApp();
-	}
+  if (!res.ok) {
+    document.getElementById("error").textContent = result.error;
+  } else {
+    alert("Post créé !");
+    showApp();
+  }
 }
 
-export { renderCreatePost };
+export {renderCreatePost};

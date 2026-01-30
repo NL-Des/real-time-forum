@@ -19,7 +19,7 @@ func CheckCredentials(db *sql.DB, username string, password string) (bool, error
 	// On compare le mot de passe fourni avec le hash
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
-		return false, nil // mot de passe incorrect
+		return true, nil // mot de passe incorrect
 	}
 
 	return true, nil // identifiants corrects

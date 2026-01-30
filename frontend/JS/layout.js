@@ -1,40 +1,37 @@
-import { renderCreatePost } from "./new-post.js";
-import { Logout } from "./authentication.js";
+import {renderCreatePost} from "./new-post.js";
+import {Logout} from "./authentication.js";
 
 const header = document.getElementById("header");
 const main = document.getElementById("main-content");
 const sideBar = document.getElementById("sidebar");
 
 function buildHeader() {
-	header.innerHTML = `<div class="header-left">
+  header.innerHTML = `<div class="header-left">
     <h1>Real time forum</h1>
   </div>
-  <div class="forum-section">
-      <h2 id="welcome-message"></h2>
-      <p>Vous êtes connecté au forum.</p>
-      <button id="logoutBtn">Déconnexion</button>
-    </div>
   <nav class="header-nav">
     <button id="new-post-btn">Nouveau post</button>
     <button id="home-btn">Home</button>
-    <button>Catégories</button>
-    <button>Chat</button>
+    <button id="categories-btn">Catégories</button>
+    <button id="chat-btn">Chat</button>
   </nav>
+  <div class="forum-section">
+      <p id="welcome-message"></p>
+      <img src="./frontend/img/profil.gif" alt="image profil" class="profil-icon">
+      <button id="logoutBtn">Déconnexion</button>
+    </div>
+`;
 
-  <div class="header-right">
-    <span class="user-icon"> </span>
-  </div>`;
-
-	const postBtn = document.getElementById("new-post-btn");
-	postBtn.addEventListener("click", renderCreatePost);
+  const postBtn = document.getElementById("new-post-btn");
+  postBtn.addEventListener("click", renderCreatePost);
   const logoutBtn = document.getElementById("logoutBtn");
   logoutBtn.addEventListener("click", Logout);
 }
 
 function showApp() {
-	document.getElementById("auth-container").style.display = "none";
-	document.getElementById("app-container").style.display = "block";
-	buildHeader();
+  document.getElementById("auth-container").style.display = "none";
+  document.getElementById("app-container").style.display = "block";
+  buildHeader();
 }
 
-export { header, main, sideBar, buildHeader, showApp };
+export {header, main, sideBar, buildHeader, showApp};
