@@ -240,6 +240,7 @@ header {
   font-weight: 500;
   margin: 0;
   white-space: nowrap;
+  letter-spacing: +2px;
 }
 
 /* CENTRE : Navigation (Modifié pour être à droite) */
