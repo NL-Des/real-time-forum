@@ -7,11 +7,11 @@ import (
 )
 
 // CheckCredentials vérifie si le username et le mot de passe sont corrects
-func CheckCredentials(db *sql.DB, username string, password string) (bool, error) {
+func CheckCredentials(db *sql.DB, login string, password string) (bool, error) {
 	var hashedPassword string
 
 	// On récupère le mot de passe hashé depuis la base
-	err := db.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&hashedPassword)
+	err := db.QueryRow("SELECT password FROM users WHERE username = ? OR email = ?", login, login).Scan(&hashedPassword)
 	if err != nil {
 		return false, err // utilisateur non trouvé ou erreur DB
 	}

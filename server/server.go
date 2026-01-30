@@ -24,7 +24,7 @@ func Server(port string, db *sql.DB) {
 	mux.Handle("/frontend/", http.StripPrefix("/frontend/", fs))
 	// Lancement serveur Go
 	fmt.Printf("Serveur démarré sur le port %s \n", port)
-	fmt.Printf("Page d'accès : http://localhost:8081/ \n")
+	fmt.Printf("Page d'accès : http://localhost:8080/ \n")
 	err := http.ListenAndServe(port, mux) // A laisser à la fin, élément bloquant la lecture des instructions suivantes.
 	if err != nil {
 		fmt.Printf("Error lauching servor : %v \n", err)

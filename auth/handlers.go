@@ -9,7 +9,7 @@ import (
 
 // Json reçu depuis le frontend
 type LoginRequest struct {
-	Username string `json:"username"`
+	Login    string `json:"login"`
 	Password string `json:"password"`
 }
 
@@ -36,7 +36,7 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		}
 
 		// Vérification des identifiants avec authenticator.go
-		ok, err := CheckCredentials(db, req.Username, req.Password)
+		ok, err := CheckCredentials(db, req.Login, req.Password)
 		if err != nil {
 			http.Error(w, "Bad request", http.StatusBadRequest)
 			log.Println("DB error:", err)
@@ -47,7 +47,7 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 
 		if ok {
 			res.Success = true
-			res.User.Nickname = req.Username
+			res.User.Nickname = req.Login
 		} else {
 			res.Success = false
 		}
