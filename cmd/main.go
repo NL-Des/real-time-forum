@@ -21,7 +21,7 @@ func main() {
 	}
 	// Attribution du port du serveur.
 	// port := os.Getenv("SERVER_PORT")
-	port := ":8080" // Inscrit en dur pour les tests.
+	port := ":8081" // Inscrit en dur pour les tests.
 	// Attribution du chemin de la database.
 	// pathDB := os.Getenv("REALTIMEFORUM_DB_PATH")
 	pathDB := "./vault/real_time_forum_database.db" // Inscrit en dur pour les tests.

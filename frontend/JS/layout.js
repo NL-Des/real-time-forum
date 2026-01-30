@@ -1,4 +1,5 @@
 import { renderCreatePost } from "./new-post.js";
+import { Logout } from "./authentication.js";
 
 const header = document.getElementById("header");
 const main = document.getElementById("main-content");
@@ -8,7 +9,11 @@ function buildHeader() {
 	header.innerHTML = `<div class="header-left">
     <h1>Real time forum</h1>
   </div>
-
+  <div class="forum-section">
+      <h2 id="welcome-message"></h2>
+      <p>Vous êtes connecté au forum.</p>
+      <button id="logoutBtn">Déconnexion</button>
+    </div>
   <nav class="header-nav">
     <button id="new-post-btn">Nouveau post</button>
     <button id="home-btn">Home</button>
@@ -22,6 +27,8 @@ function buildHeader() {
 
 	const postBtn = document.getElementById("new-post-btn");
 	postBtn.addEventListener("click", renderCreatePost);
+  const logoutBtn = document.getElementById("logoutBtn");
+  logoutBtn.addEventListener("click", Logout);
 }
 
 function showApp() {

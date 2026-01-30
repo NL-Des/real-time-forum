@@ -1,4 +1,5 @@
 import { showApp } from "./layout.js";
+
 export function Authentication() {
 	const connectionForm = document.querySelector(".connection-form");
 	console.log("form récup");
@@ -30,24 +31,20 @@ export function Authentication() {
 				if (data.success) {
 					showApp();
 
-					// Masquer les formulaires
-					connectionForm.style.display = "none";
-					document.querySelector(".register-form").style.display = "none";
+  					const registerForm = document.querySelector(".register-form");
+  					const forumSection = document.querySelector(".forum-section");
+  					const logoutBtn = document.getElementById("logoutBtn");
+  					const welcomeMessage = document.getElementById("welcome-message");
 
+					// Masquer les formulaires
 					// Afficher la section forum
-					const forumSection = document.querySelector(".forum-section");
-					forumSection.style.display = "block";
+					connectionForm.style.display = "none";
+  					registerForm.style.display = "none";
+  					forumSection.style.display = "block";
 
 					// Mettre le pseudo dans le message
-					document.getElementById("welcome-message").textContent =
-						`Bienvenue, ${data.user.nickname} !`;
+					welcomeMessage.textContent = `Bienvenue, ${data.user.nickname} !`;
 
-					// Gérer le logout
-					document.getElementById("logout").addEventListener("click", () => {
-						forumSection.style.display = "none";
-						connectionForm.style.display = "flex";
-						document.querySelector(".register-form").style.display = "none";
-					});
 				} else {
 					alert("Connexion échouée !");
 				}
@@ -60,3 +57,18 @@ export function Authentication() {
 		console.log("Username :", username, "Password :", password);
 	});
 }
+
+export function Logout() {
+  const forumSection = document.querySelector(".forum-section");
+  const authContainer = document.getElementById("auth-container");
+  const appContainer = document.getElementById("app-container");
+  const connectionForm = document.querySelector(".connection-form");
+  const registerForm = document.querySelector(".register-form");
+
+  forumSection.style.display = "none";
+  appContainer.style.display = "none";
+  authContainer.style.display = "flex";
+  connectionForm.style.display = "flex";
+  registerForm.style.display = "none";
+}
+
