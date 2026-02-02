@@ -7,7 +7,7 @@ export function Authentication() {
   connectionForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const username = document.getElementById("register-username").value;
+    const login = document.getElementById("register-username").value;
     const password = document.getElementById("password").value;
 
     console.log("username et ppswd recup");
@@ -20,7 +20,7 @@ export function Authentication() {
       },
       body: JSON.stringify({
         // on transforme nos valeurs JS en JSON
-        username: username,
+        login: login,
         password: password,
       }),
     })
@@ -33,7 +33,6 @@ export function Authentication() {
 
           const registerForm = document.querySelector(".register-form");
           const forumSection = document.querySelector(".forum-section");
-          const logoutBtn = document.getElementById("logoutBtn");
           const welcomeMessage = document.getElementById("welcome-message");
 
           // Masquer les formulaires
@@ -53,7 +52,7 @@ export function Authentication() {
         console.log("Erreur réseau :", error);
       });
 
-    console.log("Username :", username, "Password :", password);
+    console.log("Login :", login, "Password :", password);
   });
 }
 

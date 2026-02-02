@@ -7,20 +7,24 @@ import (
 )
 
 // CheckCredentials vérifie si le username et le mot de passe sont corrects
-func CheckCredentials(db *sql.DB, username string, password string) (bool, error) {
+func CheckCredentials(db *sql.DB, login string, password string) (bool, int, error) {
+	var userID int
 	var hashedPassword string
 
 	// On récupère le mot de passe hashé depuis la base
-	err := db.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&hashedPassword)
+	err := db.QueryRow("SELECT id, password FROM users WHERE username = ? OR email = ?", login, login).Scan(&userID, &hashedPassword)
 	if err != nil {
-		return false, err // utilisateur non trouvé ou erreur DB
+		if err == sql.ErrNoRows {
+			return false, 0, nil // utilisateur non trouvé
+		}
+		return false, 0, err // utilisateur non trouvé ou erreur DB
 	}
 
 	// On compare le mot de passe fourni avec le hash
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
-		return false, nil // mot de passe incorrect
+		return false, 0, nil // mot de passe incorrect
 	}
 
-	return true, nil // identifiants corrects
+	return true, userID, nil // identifiants corrects
 }
