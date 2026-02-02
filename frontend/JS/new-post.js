@@ -11,21 +11,29 @@ function renderCreatePost() {
   isUsed = true;
 
   main.innerHTML = `
-    <h2>New post</h2>
+    <h2>Nouveau post</h2>
     <form id="post-form">
-      <input name="title" placeholder="Title" required />
-      <textarea name="content" placeholder="Text" required></textarea>
-      <div class="select-category">
-      <input type="checkbox" name="category" value="1"/>
-      <label for="category1"> Category 1 </label>
-      <input type="checkbox" name="category" value="2"/>
-      <label for="category2"> Category 2 </label>
-      <input type="checkbox" name="category" value="3"/>
-      <label for="category3"> Category 3 </label>
-      <input type="checkbox" name="category" value="4"/>
-      <label for="category4"> Category 4 </label>
+    <div class="title">
+    <label for="title">Titre</label>
+      <textarea id="title" name="title" required></textarea>
       </div>
-      <button type="submit">Publier</button>
+      <div class="message">
+        <label for="message">Message</label>
+      <textarea id="message" name="message" placeholder="Text" required></textarea>
+      </div>
+      <div class="select-category">
+       <label for="category">Catégorie</label>
+      <select id="category" name="category" required>
+        <option value="" disabled selected>Choisir une catégorie</option>
+        <option value="1">Category 1</option>
+        <option value="2">Category 2</option>
+        <option value="3">Category 3</option>
+        <option value="4">Category 4</option>
+      </select>
+      </div>
+      <div class="newPost">
+      <button id="newPost" type="submit">Publier</button>
+        </div>
       <p id="error"></p>
     </form>
   `;

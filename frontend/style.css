@@ -240,7 +240,7 @@ header {
 /* GAUCHE : Titre */
 .header-left h1 {
   /* Attention au point manquant dans ton code précédent */
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   font-weight: 500;
   margin: 0;
   white-space: nowrap;
@@ -300,8 +300,8 @@ header {
 #welcome-message {
   font-weight: 700;
   display: flex;
-  margin: auto;
   color: black;
+  margin-right: 10px;
 }
 
 #logoutBtn {
@@ -312,6 +312,7 @@ header {
   border-radius: 5px;
   padding: 10px;
   cursor: pointer;
+  margin-left: 10px;
 }
 #logoutBtn:hover {
   transform: translateY(-2px);
@@ -321,7 +322,116 @@ header {
 #logoutBtn:active {
   transform: scale(0.98);
 }
-/* Responsive : empiler les champs sur écrans étroits */
+
+/* =============================
+core-content
+================================
+*/
+
+#core-content {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+}
+
+/* =============================
+sidebar
+================================
+*/
+
+#sidebar {
+  background: var(--bg-grey-2);
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#sidebar h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+/* =============================
+main-content
+================================
+*/
+#main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#main-content h2 {
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+#post-form {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-grey-1);
+  border-radius: 30px;
+  padding: 2rem;
+  width: 90%;
+  height: fit-content;
+}
+.title,
+.message,
+.select-category {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+#post-form label {
+  font-size: 1.5rem;
+}
+#post-form textarea {
+  border-radius: 30px;
+  background-color: var(--text-white);
+  width: 80%;
+  border: none;
+  padding: 10px;
+}
+
+#message {
+  min-height: 150px;
+}
+#post-form select {
+  background-color: var(--text-white);
+  width: fit-content;
+  color: black;
+}
+
+.newPost {
+  display: flex;
+  justify-content: center;
+}
+
+#newPost {
+  font-weight: 400;
+  border: none;
+  margin-top: 1.5rem;
+  background: var(--bg-grey-3);
+  color: white;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  width: fit-content;
+}
+#newPost:hover {
+  transform: translateY(-2px);
+  align-items: center;
+}
+
+#newPost:active {
+  transform: scale(0.98);
+}
+
+/*Responsive : empiler les champs sur écrans étroits */
 @media (max-width: 720px) {
   .register-form {
     padding: 1rem;

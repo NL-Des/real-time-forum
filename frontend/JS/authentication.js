@@ -40,7 +40,7 @@ export function Authentication() {
           // Afficher la section forum
           connectionForm.style.display = "none";
           registerForm.style.display = "none";
-          forumSection.style.display = "inerhit";
+          forumSection.style.display = "flex";
 
           // Mettre le pseudo dans le message
           welcomeMessage.textContent = `Bienvenue, ${data.user.nickname} !`;
