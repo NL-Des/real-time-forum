@@ -220,6 +220,10 @@ Header nav
 ===========================
  */
 
+#app-container {
+  width: 100%;
+}
+
 header {
   display: grid;
   background-color: var(--bg-grey-1);
@@ -282,19 +286,27 @@ header {
 .forum-section {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 .forum-section h2 {
   font-size: 1rem;
   font-weight: 400;
 }
+
+.profile-section {
+  display: flex;
+  align-items: center;
+}
 #welcome-message {
   font-weight: 700;
+  display: flex;
+  margin: auto;
+  color: black;
 }
 
 #logoutBtn {
   font-weight: 400;
   border: none;
-  margin-top: 1.5rem;
   background: var(--bg-grey-3);
   color: white;
   border-radius: 5px;

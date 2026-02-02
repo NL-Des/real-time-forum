@@ -15,7 +15,7 @@ function buildHeader() {
     <button id="categories-btn">Catégories</button>
     <button id="chat-btn">Chat</button>
   </nav>
-  <div class="forum-section">
+  <div class="profile-section">
       <p id="welcome-message"></p>
       <img src="./frontend/img/profil.gif" alt="image profil" class="profil-icon">
       <button id="logoutBtn">Déconnexion</button>
@@ -30,7 +30,7 @@ function buildHeader() {
 
 function showApp() {
   document.getElementById("auth-container").style.display = "none";
-  document.getElementById("app-container").style.display = "block";
+  document.getElementById("app-container").style.display = "contents";
   buildHeader();
 }
 
