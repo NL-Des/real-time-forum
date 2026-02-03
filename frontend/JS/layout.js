@@ -25,6 +25,24 @@ function buildHeader() {
     <span class="user-icon"> </span>
   </div>`;
 
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    try {
+        const response = await fetch("/logout", {
+            method: "POST",
+            credentials: "include" // très important pour envoyer le cookie HttpOnly
+        });
+
+        if (response.ok) {
+            alert("Déconnecté avec succès !");
+        } else {
+            alert("Erreur lors de la déconnexion.");
+        }
+    } catch (err) {
+        console.error("Erreur fetch logout :", err);
+    }
+});
+
+
 	const postBtn = document.getElementById("new-post-btn");
 	postBtn.addEventListener("click", renderCreatePost);
   const logoutBtn = document.getElementById("logoutBtn");

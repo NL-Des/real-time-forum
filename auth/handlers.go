@@ -54,6 +54,12 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 				return
 			}
 
+			_, err = db.Exec("UPDATE users SET userOnline = 1 WHERE id = ?", userID)
+			if err != nil {
+				http.Error(w, "Erreur mise à jour statut utilisateur", http.StatusInternalServerError)
+				return
+			}
+
 			http.SetCookie(w, &http.Cookie{
 				Name:     "session_token",
 				Value:    token,
@@ -70,5 +76,60 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(res)
+	}
+}
+
+func LogoutHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		// Lire le cookie session_token
+		cookie, err := r.Cookie("session_token")
+		if err != nil {
+			// Cookie absent = l'utilisateur est déjà déconnecté
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("Déconnecté"))
+			return
+		}
+
+		// Récupérer le UserID associé au token
+		var userID int
+		err = db.QueryRow("SELECT UserID FROM session WHERE Token = ?", cookie.Value).Scan(&userID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// Session inexistante = déjà déconnecté
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte("Déconnecté"))
+				return
+			}
+			// Erreur BDD
+			http.Error(w, "Erreur base de données", http.StatusInternalServerError)
+			return
+		}
+
+		// Mettre userOnline à 0
+		_, err = db.Exec("UPDATE users SET userOnline = 0 WHERE id = ?", userID)
+		if err != nil {
+			http.Error(w, "Impossible de mettre à jour le statut", http.StatusInternalServerError)
+			return
+		}
+
+		// Supprimer la session
+		_, err = db.Exec("DELETE FROM session WHERE Token = ?", cookie.Value)
+		if err != nil {
+			http.Error(w, "Impossible de supprimer la session", http.StatusInternalServerError)
+			return
+		}
+
+		// Supprimer le cookie côté client
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session_token",
+			Value:    "",
+			Expires:  time.Now().Add(-1 * time.Hour), // expiré
+			HttpOnly: true,
+			Path:     "/",
+		})
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Déconnecté"))
 	}
 }
