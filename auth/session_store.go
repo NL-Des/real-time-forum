@@ -19,3 +19,19 @@ func CreateSession(db *sql.DB, userID int) (string, error) {
 
 	return token, nil
 }
+
+func CleanExpiredSessions(db *sql.DB) error {
+	// Supprime toutes les sessions expirées
+	_, err := db.Exec("DELETE FROM session WHERE ExpiresAt < CURRENT_TIMESTAMP")
+	if err != nil {
+		return err
+	}
+
+	// Met les utilisateurs sans session active à offline
+	_, err = db.Exec("UPDATE users SET userOnline = 0 WHERE id NOT IN (SELECT UserID FROM session)")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"real-time-forum/auth"
 	"real-time-forum/internal/config-database"
 	"real-time-forum/server" // Ceci permet d'appeler la fonction qui se trouve dans le fichier.
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -57,6 +59,27 @@ func main() {
 	defer db.Close()
 
 	// MARK: Server
+	// Nettoyage immédiat des sessions au démarrage
+	if err := auth.CleanExpiredSessions(db); err != nil {
+		log.Println("Erreur nettoyage initial des sessions :", err)
+	} else {
+		log.Println("Nettoyage initial des sessions terminé")
+	}
+
+	// Nettoyage automatique toutes les 5 minutes
+	go func() {
+		ticker := time.NewTicker(5 * time.Minute) // toutes les 5 minutes
+		for {
+			<-ticker.C
+			err := auth.CleanExpiredSessions(db)
+			if err != nil {
+				log.Println("Erreur nettoyage sessions :", err)
+			} else {
+				log.Println("Nettoyage des sessions expirées terminé")
+			}
+		}
+	}()
+
 	// Lancement du serveur GO.
 	server.Server(port, db)
 }

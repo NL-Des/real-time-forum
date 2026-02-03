@@ -29,7 +29,7 @@ function buildHeader() {
     try {
         const response = await fetch("/logout", {
             method: "POST",
-            credentials: "include" // très important pour envoyer le cookie HttpOnly
+            credentials: "include"
         });
 
         if (response.ok) {
