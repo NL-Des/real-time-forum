@@ -46,12 +46,14 @@ async function handleCreatePost(e) {
 	console.log("handleCreatePost");
 
 	const form = e.target;
+	let categoriesId = getSelectedCategories(form);
+	console.log(categoriesId);
 
 	const data = {
 		title: form.title.value,
 		content: form.content.value,
 		authorid: 1,
-		category_ids: getSelectedCategories(form),
+		category_ids: categoriesId,
 	};
 
 	const res = await fetch("/post", {
@@ -59,6 +61,8 @@ async function handleCreatePost(e) {
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(data),
 	});
+
+	console.log("data : ", data);
 
 	console.log("fetch fait");
 

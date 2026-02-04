@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 /* Contient des comments */
-CREATE TABLE IF NOT EXISTS post (
+CREATE TABLE IF NOT EXISTS post  (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     Title TEXT NOT NULL,
     Content TEXT NOT NULL,
@@ -61,15 +61,4 @@ CREATE TABLE IF NOT EXISTS post_categories (
 	/* Grâce à la clé primaire, on ne peut pas avoir plusieurs fois la même catégorie pour un même post. */
     FOREIGN KEY (PostID) REFERENCES post(ID),
     FOREIGN KEY (CategoryID) REFERENCES category(ID)
-);
-
-CREATE TABLE IF NOT EXISTS session (
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    UserID INTEGER NOT NULL,
-    Token TEXT NOT NULL UNIQUE,
-    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP, /* Moment de la connexion */
-    ExpiresAt DATETIME NOT NULL, /* 24 heures ? */
-    UserAgent TEXT,
-    IP TEXT,
-    FOREIGN KEY (UserID) REFERENCES users(id)
 );
