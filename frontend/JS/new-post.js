@@ -21,16 +21,29 @@ function renderCreatePost() {
         <label for="message">Message</label>
       <textarea id="message" name="message" placeholder="Text" required></textarea>
       </div>
-      <div class="select-category">
-       <label for="category">Catégorie</label>
-      <select id="category" name="category" required>
-        <option value="" disabled selected>Choisir une catégorie</option>
-        <option value="1">Category 1</option>
-        <option value="2">Category 2</option>
-        <option value="3">Category 3</option>
-        <option value="4">Category 4</option>
-      </select>
-      </div>
+     <div class="select-category">
+  <span>Catégories</span>
+
+  <label>
+    <input type="checkbox" name="category" value="1" />
+    Category 1
+  </label>
+
+  <label>
+    <input type="checkbox" name="category" value="2" />
+    Category 2
+  </label>
+
+  <label>
+    <input type="checkbox" name="category" value="3" />
+    Category 3
+  </label>
+
+  <label>
+    <input type="checkbox" name="category" value="4" />
+    Category 4
+  </label>
+</div>
       <div class="newPost">
       <button id="newPost" type="submit">Publier</button>
         </div>
@@ -57,7 +70,7 @@ async function handleCreatePost(e) {
 
   const data = {
     title: form.title.value,
-    content: form.content.value,
+    content: form.message.value,
     authorid: 1,
     category_ids: getSelectedCategories(form),
   };
