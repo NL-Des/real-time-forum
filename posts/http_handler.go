@@ -19,9 +19,9 @@ func NewPostHandler(db *sql.DB) http.HandlerFunc {
 			}
 		}
 
+		log.Println(newPost.CategoryIDs)
 		// Récupérer l'auteur grâce au cookie
 
-		log.Println(newPost)
 		// -- gestion d'erreurs --
 		// ajouter verif post existant
 
@@ -35,6 +35,12 @@ func NewPostHandler(db *sql.DB) http.HandlerFunc {
 
 		if err := SavePost(db, &newPost); err != nil {
 			log.Println("<NewPostHandler> Error cannot save post: ", err)
+			RespondError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		if err := SavePostCategories(db, &newPost); err != nil {
+			log.Println("<NewPostHandler> Error cannot save post categories: ", err)
 			RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
