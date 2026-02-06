@@ -35,3 +35,12 @@ func CleanExpiredSessions(db *sql.DB) error {
 
 	return nil
 }
+
+func GetActiveSessionToken(db *sql.DB, userID int) string {
+	var sessionToken string
+	err := db.QueryRow("SELECT token FROM session WHERE userID = ? AND ExpiresAt > CURRENT_TIMESTAMP", userID).Scan(&sessionToken)
+	if err != nil {
+		return ""
+	}
+	return sessionToken
+}

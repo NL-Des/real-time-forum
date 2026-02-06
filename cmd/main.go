@@ -63,7 +63,7 @@ func main() {
 	if err := auth.CleanExpiredSessions(db); err != nil {
 		log.Println("Erreur nettoyage initial des sessions :", err)
 	} else {
-		log.Println("Nettoyage initial des sessions terminé")
+		fmt.Println("Nettoyage initial des sessions terminé")
 	}
 
 	// Nettoyage automatique toutes les 5 minutes

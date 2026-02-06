@@ -3,6 +3,7 @@ package auth
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -47,11 +48,21 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 		res := LoginResponse{}
 
 		if ok {
-			// Création de la session
-			token, err := CreateSession(db, userID)
-			if err != nil {
-				http.Error(w, "Impossible de créer a session", http.StatusInternalServerError)
-				return
+			// Vérifier si une session active existe déjà
+			existingToken := GetActiveSessionToken(db, userID)
+
+			var token string
+
+			if existingToken != "" {
+				token = existingToken
+				fmt.Println("Token déjà existant pour cet utilisateur")
+			} else {
+				// Création de la session
+				token, err = CreateSession(db, userID)
+				if err != nil {
+					http.Error(w, "Impossible de créer a session", http.StatusInternalServerError)
+					return
+				}
 			}
 
 			_, err = db.Exec("UPDATE users SET userOnline = 1 WHERE id = ?", userID)
@@ -70,10 +81,10 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 
 			res.Success = true
 			res.User.Nickname = req.Login
+
 		} else {
 			res.Success = false
 		}
-
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(res)
 	}
@@ -114,11 +125,11 @@ func LogoutHandler(db *sql.DB) http.HandlerFunc {
 		}
 
 		// Supprimer la session
-		_, err = db.Exec("DELETE FROM session WHERE Token = ?", cookie.Value)
+		/* _, err = db.Exec("DELETE FROM session WHERE Token = ?", cookie.Value)
 		if err != nil {
 			http.Error(w, "Impossible de supprimer la session", http.StatusInternalServerError)
 			return
-		}
+		} */
 
 		// Supprimer le cookie côté client
 		http.SetCookie(w, &http.Cookie{
