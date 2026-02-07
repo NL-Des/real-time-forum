@@ -144,3 +144,28 @@ func LogoutHandler(db *sql.DB) http.HandlerFunc {
 		w.Write([]byte("Déconnecté"))
 	}
 }
+
+func CurrentUserHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		userIDValue := r.Context().Value(UserIDKey)
+		if userIDValue == nil {
+			http.Error(w, "Not authenticated", http.StatusUnauthorized) // erreur 401
+			return
+		}
+
+		userID := userIDValue.(int)
+
+		var nickname string
+		err := db.QueryRow("SELECT UserName FROM users WHERE id = ?", userID).Scan(&nickname)
+		if err != nil {
+			http.Error(w, "User not found", http.StatusInternalServerError)
+			return
+		}
+
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"userID":   userID,
+			"nickname": nickname,
+		})
+	}
+}

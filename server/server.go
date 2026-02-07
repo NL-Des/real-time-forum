@@ -14,9 +14,13 @@ import (
 func Server(port string, db *sql.DB) {
 	mux := http.NewServeMux() // Création d'un serveur mux vide.
 
+	// routes publiques
 	mux.HandleFunc("/auth/login", auth.LoginHandler(db))
 	mux.HandleFunc("/logout", auth.LogoutHandler(db))
-	mux.HandleFunc("/post", posts.NewPostHandler(db))
+
+	// routes protégées
+	mux.Handle("/auth/me", auth.AuthMiddleware(db)(http.HandlerFunc(auth.CurrentUserHandler(db))))
+	mux.Handle("/post", auth.AuthMiddleware(db)(http.HandlerFunc(posts.NewPostHandler(db))))
 
 	// Quand l'utilisateur arrive, affiche mainPage.
 	mux.HandleFunc("/", users.MainPage)

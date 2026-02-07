@@ -5,12 +5,12 @@ export function Authentication() {
 	console.log("form récup");
 
 	connectionForm.addEventListener("submit", (e) => {
-		e.preventDefault();
+		e.preventDefault(); // empêche le rechargement de la page
 
 		const login = document.getElementById("register-username").value;
 		const password = document.getElementById("password").value;
 
-		console.log("username et ppswd recup");
+		console.log("username et password recup");
 
 		fetch("/auth/login", {
 			// envoie la requête au serveur sur la route /auth/login
@@ -18,6 +18,7 @@ export function Authentication() {
 			headers: {
 				"Content-Type": "application/json", // le serveur sait qu’on envoie du JSON
 			},
+			credentials: "include",
 			body: JSON.stringify({
 				// on transforme nos valeurs JS en JSON
 				login: login,
@@ -64,10 +65,15 @@ export function Logout() {
   const connectionForm = document.querySelector(".connection-form");
   const registerForm = document.querySelector(".register-form");
 
-  forumSection.style.display = "none";
+  if (forumSection) forumSection.style.display = "none";
   appContainer.style.display = "none";
   authContainer.style.display = "block";
   connectionForm.style.display = "flex";
   registerForm.style.display = "none";
+
+  document.getElementById("register-username").value = "";
+  document.getElementById("password").value = "";
 }
+
+
 

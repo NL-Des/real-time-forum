@@ -75,7 +75,7 @@ func main() {
 			if err != nil {
 				log.Println("Erreur nettoyage sessions :", err)
 			} else {
-				log.Println("Nettoyage des sessions expirées terminé")
+				fmt.Println("Nettoyage des sessions expirées terminé")
 			}
 		}
 	}()
