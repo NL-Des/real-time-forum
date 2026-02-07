@@ -145,6 +145,11 @@ func LogoutHandler(db *sql.DB) http.HandlerFunc {
 	}
 }
 
+// CurrentUserHandler renvoie les informations de l’utilisateur actuellement connecté.
+// Le middleware d’authentification place l’ID utilisateur dans le context.
+// Si aucune session valide n’est trouvée, la route renvoie 401.
+// Sinon, elle récupère le pseudo en base et renvoie un JSON contenant userID et nickname.
+// Cette route est utilisée par le front pour savoir si une session existe déjà au chargement de la SPA. ( affichage de login ou app )
 func CurrentUserHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
