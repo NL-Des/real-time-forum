@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"real-time-forum/auth"
+	"real-time-forum/comments"
 	"real-time-forum/posts"
 	"real-time-forum/users"
 )
@@ -16,6 +17,7 @@ func Server(port string, db *sql.DB) {
 
 	mux.HandleFunc("/auth/login", auth.LoginHandler(db))
 	mux.HandleFunc("/post", posts.NewPostHandler(db))
+	mux.HandleFunc("/comment", comments.NewCommentHandler(db))
 
 	// Quand l'utilisateur arrive, affiche mainPage.
 	mux.HandleFunc("/", users.MainPage)
