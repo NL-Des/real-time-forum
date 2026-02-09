@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func IsValid(post Post) error {
+func IsValidFormat(post Post) error {
 	if post.Title == "" {
 		return fmt.Errorf("empty title")
 	} else if post.Content == "" {

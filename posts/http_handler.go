@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"real-time-forum/shared"
 )
 
 func NewPostHandler(db *sql.DB) http.HandlerFunc {
@@ -15,19 +16,19 @@ func NewPostHandler(db *sql.DB) http.HandlerFunc {
 		if r.Method == "POST" {
 			if err := json.NewDecoder(r.Body).Decode(&newPost); err != nil {
 				w.WriteHeader(http.StatusBadRequest)
+				shared.RespondError(w, http.StatusBadRequest, err)
 				return
 			}
 		}
 
-		log.Println(newPost.CategoryIDs)
 		// Récupérer l'auteur grâce au cookie
 
 		// -- gestion d'erreurs --
 		// ajouter verif post existant
 
-		if err := IsValid(newPost); err != nil {
+		if err := IsValidFormat(newPost); err != nil {
 			log.Println("<NewPostHandler> Error invalid post: ", err)
-			RespondError(w, http.StatusBadRequest, err)
+			shared.RespondError(w, http.StatusBadRequest, err)
 			return
 		}
 
@@ -35,13 +36,13 @@ func NewPostHandler(db *sql.DB) http.HandlerFunc {
 
 		if err := SavePost(db, &newPost); err != nil {
 			log.Println("<NewPostHandler> Error cannot save post: ", err)
-			RespondError(w, http.StatusInternalServerError, err)
+			shared.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
 
 		if err := SavePostCategories(db, &newPost); err != nil {
 			log.Println("<NewPostHandler> Error cannot save post categories: ", err)
-			RespondError(w, http.StatusInternalServerError, err)
+			shared.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -54,13 +55,4 @@ func NewPostHandler(db *sql.DB) http.HandlerFunc {
 		})
 	}
 
-}
-
-// Fonction renvoi message d'erreur au front
-func RespondError(w http.ResponseWriter, status int, err error) {
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusBadRequest)
-	json.NewEncoder(w).Encode(map[string]string{
-		"error": err.Error(),
-	})
 }
