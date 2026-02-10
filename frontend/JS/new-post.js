@@ -3,7 +3,7 @@ import {main, showApp} from "./layout.js";
 let isUsed = false;
 
 function renderCreatePost() {
-  console.log("affichage forumalaire post");
+  console.log("affichage formulaire post");
 
   if (isUsed === true) {
     return;

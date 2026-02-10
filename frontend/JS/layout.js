@@ -52,11 +52,21 @@ function buildSidebar() {
   `;
 }
 
+function buildMain() {
+  main.innerHTML = `<h2>Posts</h2>
+  <div class="posts-header">
+  			<span>Titre</span>
+  			<span>Catégorie(s)</span>
+  			<span>Texte</span>
+		</div>`
+}
+
 function showApp() {
   document.getElementById("auth-container").style.display = "none";
   document.getElementById("app-container").style.display = "contents";
   buildHeader();
   buildSidebar();
+  buildMain();
 }
 
 export {header, main, sideBar, buildHeader, showApp};

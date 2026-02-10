@@ -587,3 +587,78 @@ footer {
     font-size: 1.4rem;
   }
 }
+
+/**********************************************************************/
+/*MARK: AFFICHAGE DES POSTS
+/**********************************************************************/
+
+/* ====== En-tête ====== */
+.posts-header,
+.posts-banner a {
+  display: grid;
+  grid-template-columns: 1fr 2fr 3fr; /* mêmes proportions partout */
+  column-gap: 15px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.posts-header {
+  background-color: rgba(0,0,0,0.15);
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  color: #222;
+}
+
+/* ====== Bannière de sujet ====== */
+.posts-banner {
+  background-color: rgba(255,255,255,0.9);
+  padding: 15px 20px;
+  margin: 10px auto;
+  max-width: 900px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.posts-banner:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+.posts-banner a {
+  text-decoration: none;
+  color: #333;
+}
+
+/* ====== Contenu ====== */
+.posts-banner span:last-child {
+  color: #555;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ====== Catégories ====== */
+.posts-categories {
+  display: flex;
+  flex-direction: column; /* les catégories les unes sous les autres */
+  gap: 4px;
+}
+
+.category-item {
+  display: inline-block;
+  background-color: rgba(0,0,0,0.05);
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+/* ====== Message "aucun sujet" ====== */
+.no-posts {
+  text-align: center;
+  margin: 40px auto;
+  font-style: italic;
+  color: #666;
+}

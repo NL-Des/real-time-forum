@@ -49,8 +49,9 @@ func NewPostHandler(db *sql.DB) http.HandlerFunc {
 		log.Println("New post saved into db")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(map[string]string{
+		json.NewEncoder(w).Encode(map[string]interface{}{
 			"message": "post created",
+			"post":    newPost,
 		})
 	}
 
