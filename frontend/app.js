@@ -1,13 +1,13 @@
-import { ToggleRegisterFrom } from "./JS/connection.js";
-import { CreateAccount } from "./JS/create-account.js";
-import { Authentication } from "./JS/authentication.js";
-import { showApp } from "./JS/layout.js";
+import {ToggleRegisterFrom} from "./JS/connection.js";
+import {CreateAccount} from "./JS/create-account.js";
+import {Authentication} from "./JS/authentication.js";
+import {showApp} from "./JS/layout.js";
 
 const authContainer = document.getElementById("auth-container");
 const appContainer = document.getElementById("app-container");
 
 function showLogin() {
-  authContainer.style.display = "block";
+  authContainer.style.display = "flex";
   appContainer.style.display = "none";
 }
 
@@ -37,5 +37,3 @@ document.addEventListener("DOMContentLoaded", () => {
       // Pas connecté : on reste sur le login, déjà initialisé
     });
 });
-
-
