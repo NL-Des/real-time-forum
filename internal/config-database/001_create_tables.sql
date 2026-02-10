@@ -3,13 +3,13 @@ PRAGMA foreign_keys = ON;
 /* Table des utilisateurs */
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    UserName TEXT NOT NULL UNIQUE CHECK(LENGTH(UserName) >= 3),
+    UserName TEXT NOT NULL UNIQUE CHECK(LENGTH(UserName) >= 1),
     Age INTEGER NOT NULL CHECK(Age >= 15), /* limite d'âge */
     Gender TEXT NOT NULL CHECK(Gender IN('Man', 'Woman', 'Other')), /* N'accepte que les termes indiqués */
     FirstName TEXT NOT NULL,
     LastName TEXT NOT NULL,
     Email TEXT NOT NULL UNIQUE,
-    Password TEXT NOT NULL CHECK(LENGTH(Password) >= 8), /* Taille minimale du mdp */
+    Password TEXT NOT NULL CHECK(LENGTH(Password) >= 1), /* Taille minimale du mdp */
     userOnline INTEGER DEFAULT 0 /* 0 = hors ligne | 1 = en ligne */
 );
 

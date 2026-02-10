@@ -8,13 +8,14 @@
 }
 
 :root {
-  --primary: #667eea;
-  --secondary: #764ba2;
-  --bg-dark: #1a1a2e;
+  --bg-white: #ffffff;
+  --bg-grey-1: #d9d9d9;
+  --bg-grey-2: #737373;
+  --bg-grey-3: #545454;
   --bg-light: #16213e;
-  --text-light: #eaeaea;
+  --text-dark: black;
   --text-gray: #94a3b8;
-  --accent: #f093fb;
+  --text-white: #ffffff;
   --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
@@ -23,11 +24,20 @@
 ======================================== */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-light) 100%);
-  color: var(--text-light);
+  background: var(--bg-white);
+  color: var(--text-dark);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+#auth-container {
+  display: flex; /* Active Flexbox */
+  flex-direction: column; /* Aligne les enfants (titre, form) en colonne */
+  justify-content: center; /* Centre VERTICALEMENT */
+  align-items: center; /* Centre HORIZONTALEMENT */
+  flex: 1; /* L'élément s'étire pour prendre toute la hauteur disponible */
+  width: 100%; /* Prend toute la largeur */
 }
 
 h1 {
@@ -37,11 +47,7 @@ h1 {
   justify-content: center;
   font-size: 4rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text; /* Applique le background uniquement sur la forme du text */
-  -webkit-text-fill-color: transparent; /* rend le text transparent pour laisser voir le background à travers */
-  background-clip: text; /* decoupe le background pour qu'il n'apparaisse que sur la forme des lettres*/
-  color: transparent; /* Fallback si webkit ne marche pas */
+  color: var(--text-dark); /* Fallback si webkit ne marche pas */
   letter-spacing: -1px;
   align-items: center;
 }
@@ -63,113 +69,128 @@ h1 {
   margin-bottom: 15px;
   display: none;
 }
-.connection {
+.connection,
+.creation-account,
+.new-account-comeback {
   font-weight: 400;
   margin-top: 10px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: var(--bg-grey-3);
   border: none;
   color: white;
   border-radius: 5px;
   padding: 10px;
+  margin-top: 2rem;
+  cursor: pointer;
 }
 
-.connection:hover {
+.connection:hover,
+.creation-account:hover,
+.new-account-comeback :hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6);
   align-items: center;
 }
-
+.connection:active,
+.creation-account:active,
+.new-account-comeback :active {
+  transform: scale(0.98);
+}
 .connection-form {
+  background: var(--bg-grey-1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  width: fit-content;
+  padding: 3rem;
+  border-radius: 15px;
 }
 
 .form-group {
   display: flex;
+  width: 100%;
   flex-direction: column;
   align-items: center;
+  margin-top: 1rem;
 }
 
 label {
   font-weight: 500;
-  font-size: 2rem;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text; /* Applique le background uniquement sur la forme du text */
-  -webkit-text-fill-color: transparent; /* rend le text transparent pour laisser voir le background à travers */
-  background-clip: text; /* decoupe le background pour qu'il n'apparaisse que sur la forme des lettres*/
-  color: transparent; /* Fallback si webkit ne marche pas */
+  font-size: 1.5rem;
+  color: var(--text-dark); /* Fallback si webkit ne marche pas */
   letter-spacing: -1px;
   align-items: center;
   margin-bottom: 1.5rem;
 }
 
-input {
+input,
+select {
   width: 100%;
   padding: 0.7rem 0.9rem;
   font-size: 1rem;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-grey-2);
   box-sizing: border-box;
-  color: var(--text-gray);
+  color: var(--text-white);
+}
+input:focus,
+select:focus {
+  outline: none;
+  border-color: white;
+}
+
+input::placeholder,
+select::placeholder {
+  color: rgb(210, 210, 210); /* La couleur que tu veux */
+  opacity: 1; /* TRES IMPORTANT */
 }
 
 .create-account {
   display: flex;
   flex-direction: column; /* Vertical */
   align-items: center; /* Centre horizontalement */
-  gap: 0.75rem;
   margin-top: 1.5rem;
+  color: white;
 }
 .new-account {
   font-weight: 400;
-  margin-top: 10px;
-  background: white;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  border-radius: 10px;
+  border: none;
+  margin-top: 1.5rem;
+  background: var(--bg-grey-3);
+  color: white;
+  border-radius: 5px;
   padding: 10px;
   cursor: pointer;
 }
 .new-account:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6);
   align-items: center;
+}
+
+.new-account:active {
+  transform: scale(0.98);
 }
 /* ========================================
    FORM REGISTER
 ======================================== */
 
 .register-form {
+  background: var(--bg-grey-1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem; /* espace vertical cohérent */
-  font-size: 1rem; /* taille générale du texte (ajustable) */
-  font-weight: 600;
-  width: 100%;
-  max-width: 920px; /* limite la largeur pour de meilleures proportions */
-  margin: 2rem auto; /* centre le formulaire et ajoute un peu d'air */
-  padding: 2rem; /* espace intérieur */
-  box-sizing: border-box;
+  width: fit-content;
+  padding: 3rem;
+  border-radius: 15px;
 }
 
 /* Ajuste les labels pour être plus proportionnels */
 .register-form label {
-  display: block;
-  font-weight: 600;
-  font-size: 1.05rem; /* plus adapté pour un champ */
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+  font-weight: 500;
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  letter-spacing: -1px;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
 /* Conteneur double colonnes */
@@ -177,26 +198,6 @@ input {
   width: 100%;
   display: flex;
   gap: 1.5rem; /* espace horizontal entre colonnes — plus petit et cohérent */
-  align-items: flex-start;
-}
-
-/* Chaque groupe prend une part égale */
-.register-form .double-item .form-group {
-  flex: 1;
-  min-width: 0; /* évite débordement des inputs flex */
-}
-
-/* Inputs et select prennent toute la largeur du form-group */
-.register-form input,
-.register-form select {
-  width: 100%;
-  padding: 0.7rem 0.9rem;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
-  box-sizing: border-box;
-  color: var(--text-gray);
 }
 
 /* Boutons alignés à droite et espacés */
@@ -213,33 +214,224 @@ input {
   border-radius: 10px;
   font-size: 1rem;
 }
-.new-account-comeback {
-  font-weight: 400;
-  margin-top: 10px;
-  background: white;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  border-radius: 10px;
-  padding: 10px;
-  cursor: pointer;
+
+/* ===========================
+Header nav
+===========================
+ */
+
+#app-container {
+  width: 100%;
 }
-.creation-account {
-  font-weight: 400;
-  margin-top: 10px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+
+header {
+  display: grid;
+  background-color: var(--bg-grey-1);
+  align-items: center;
+  /* 
+     1fr (gauche) + 4fr (milieu) + 1fr (droite) = 6 parts.
+     4/6 = 2/3. La nav a bien la place des 2/3.
+  */
+  grid-template-columns: 1fr 4fr 1fr;
+  padding: 0 20px;
+  height: 80px;
+}
+
+/* GAUCHE : Titre */
+.header-left h1 {
+  /* Attention au point manquant dans ton code précédent */
+  font-size: 2.5rem;
+  font-weight: 500;
+  margin: 0;
+  white-space: nowrap;
+  letter-spacing: +2px;
+}
+
+/* CENTRE : Navigation (Modifié pour être à droite) */
+.header-nav {
+  /* Au lieu de centrer, on pousse le contenu à la FIN de la case (donc à droite) */
+  justify-self: end;
+
+  display: flex;
+  gap: 15px;
+
+  /* Optionnel : Ajoute un peu d'espace pour ne pas coller à la section de droite */
+  padding-right: 40px;
+}
+
+/* DROITE : Forum & Icone (Regroupés dans une div .right-side dans le HTML) */
+.right-side {
+  justify-self: end; /* Colle tout à droite de l'écran */
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-align: right;
+}
+
+/* Tes boutons (Code nettoyé) */
+#new-post-btn,
+#home-btn,
+#categories-btn,
+#chat-btn {
+  appearance: none;
   border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 1rem;
+  color: inherit;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-size: 1.2rem;
+}
+.forum-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.forum-section h2 {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+}
+#welcome-message {
+  font-weight: 700;
+  display: flex;
+  color: black;
+  margin-right: 10px;
+}
+
+#logoutBtn {
+  font-weight: 400;
+  border: none;
+  background: var(--bg-grey-3);
   color: white;
   border-radius: 5px;
   padding: 10px;
+  cursor: pointer;
+  margin-left: 10px;
 }
-.creation-account:hover {
+#logoutBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6);
   align-items: center;
 }
-/* Responsive : empiler les champs sur écrans étroits */
+
+#logoutBtn:active {
+  transform: scale(0.98);
+}
+
+/* =============================
+core-content
+================================
+*/
+
+#core-content {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+}
+
+/* =============================
+sidebar
+================================
+*/
+
+#sidebar {
+  background: var(--bg-grey-2);
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#sidebar h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+/* =============================
+main-content
+================================
+*/
+#main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#main-content h2 {
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+#post-form {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-grey-1);
+  border-radius: 30px;
+  padding: 2rem;
+  width: 90%;
+  height: fit-content;
+}
+.title,
+.message,
+.select-category {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+#post-form label {
+  font-size: 1.5rem;
+}
+#post-form textarea {
+  border-radius: 30px;
+  background-color: var(--text-white);
+  width: 80%;
+  border: none;
+  padding: 10px;
+}
+
+#message {
+  min-height: 150px;
+}
+#post-form select {
+  background-color: var(--text-white);
+  width: fit-content;
+  color: black;
+}
+
+.newPost {
+  display: flex;
+  justify-content: center;
+}
+
+#newPost {
+  font-weight: 400;
+  border: none;
+  margin-top: 1.5rem;
+  background: var(--bg-grey-3);
+  color: white;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  width: fit-content;
+}
+#newPost:hover {
+  transform: translateY(-2px);
+  align-items: center;
+}
+
+#newPost:active {
+  transform: scale(0.98);
+}
+
+/*Responsive : empiler les champs sur écrans étroits */
 @media (max-width: 720px) {
   .register-form {
     padding: 1rem;
@@ -258,26 +450,7 @@ input {
     width: 100%;
   }
 }
-.new-account-comeback:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6);
-  align-items: center;
-}
 
-/* Style pour les messages d'erreur */
-.error-message {
-  color: #f5576c;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  text-align: center;
-}
-
-.success-message {
-  color: #4facfe;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  text-align: center;
-}
 /* ========================================
    LAST NEWS
 ======================================== */
@@ -358,12 +531,12 @@ input {
 ======================================== */
 footer {
   margin-top: auto;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-grey-1);
   backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 2rem;
   text-align: center;
-  color: var(--text-gray);
+  color: var(--text-white);
   font-size: 0.95rem;
 }
 

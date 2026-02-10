@@ -1,8 +1,8 @@
-import { showApp } from "./layout.js";
+import {showApp} from "./layout.js";
 
 export function Authentication() {
-	const connectionForm = document.querySelector(".connection-form");
-	console.log("form récup");
+  const connectionForm = document.querySelector(".connection-form");
+  console.log("form récup");
 
 	connectionForm.addEventListener("submit", (e) => {
 		e.preventDefault(); // empêche le rechargement de la page
@@ -36,11 +36,11 @@ export function Authentication() {
   					const forumSection = document.querySelector(".forum-section");
   					const welcomeMessage = document.getElementById("welcome-message");
 
-					// Masquer les formulaires
-					// Afficher la section forum
-					connectionForm.style.display = "none";
-  					registerForm.style.display = "none";
-  					forumSection.style.display = "block";
+          // Masquer les formulaires
+          // Afficher la section forum
+          connectionForm.style.display = "none";
+          registerForm.style.display = "none";
+          forumSection.style.display = "flex";
 
 					// Mettre le pseudo dans le message
 					welcomeMessage.textContent = `Bienvenue, ${data.user.nickname} !`;
