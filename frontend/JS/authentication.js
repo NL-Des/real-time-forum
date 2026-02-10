@@ -46,7 +46,7 @@ export function Authentication() {
 					welcomeMessage.textContent = `Bienvenue, ${data.user.nickname} !`;
 
 				} else {
-					alert("Connexion échouée !");
+					alert("Utilisateur inconnu ou mauvais mot de passe");
 				}
 			})
 			.catch((error) => {
