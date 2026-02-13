@@ -549,7 +549,10 @@ user-list
   border-radius: 50%;
   flex-shrink: 0;
 }
-
+.user-item.has-notification::after {
+  background-color: #eec83f;
+  animation: pulse 1s infinite;
+}
 .user-item:hover {
   color: var(--bg-grey-3);
   background-color: var(--bg-grey-1);

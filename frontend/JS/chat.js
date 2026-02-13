@@ -2,6 +2,7 @@ let currentOffset = 0;
 let currentReceiverID = null;
 let isLoadingHistory = false;
 let hasMoreMessages = true;
+let currentChatUserId = null;
 
 export function handleChatClick(e) {
   console.log("clique chat");
@@ -13,6 +14,8 @@ export function handleChatClick(e) {
    <div class="messages">
      <div class="users-list"></div>
    </div>`;
+
+  currentChatUserId = null;
 
   const ws = new WebSocket("ws://localhost:8080/ws");
 
@@ -33,26 +36,40 @@ export function handleChatClick(e) {
         const userEl = document.createElement("div");
         userEl.classList.add("user-item");
         userEl.textContent = user.name;
-        userEl.dataset.id = user.id;
-        usersList.appendChild(userEl);
+        userEl.dataset.userId = user.id;
 
         userEl.addEventListener("click", () => {
+          userEl.classList.remove("has-notification");
+          currentChatUserId = user.id;
           openConversation(main, ws, user.id, user.name);
         });
+
+        usersList.appendChild(userEl);
       });
     }
 
     // ✅ Message reçu en temps réel
     if (data.type === "message") {
-      const receivedDiv = document.querySelector(".message-received");
-      if (receivedDiv) {
-        appendMessage(
-          receivedDiv,
-          data.sender,
-          data.content,
-          data.created_at,
-          false,
+      const senderId = data.sender_id;
+
+      if (currentChatUserId === senderId) {
+        const receivedDiv = document.querySelector(".message-received");
+        if (receivedDiv) {
+          appendMessage(
+            receivedDiv,
+            data.sender,
+            data.content,
+            data.created_at,
+            false,
+          );
+        }
+      } else {
+        const userItem = document.querySelector(
+          `.user-item[data-user-id="${senderId}"]`,
         );
+        if (userItem) {
+          userItem.classList.add("has-notification");
+        }
       }
     }
 
@@ -64,7 +81,6 @@ export function handleChatClick(e) {
       isLoadingHistory = false;
       hasMoreMessages = data.has_more;
 
-      // ✅ Premier chargement (offset 0) → remplacer le contenu
       if (data.offset === 0) {
         receivedDiv.innerHTML = "";
         if (data.messages) {
@@ -78,14 +94,11 @@ export function handleChatClick(e) {
             );
           });
         }
-        // ✅ Scroll tout en bas
         receivedDiv.scrollTop = receivedDiv.scrollHeight;
       } else {
-        // ✅ Chargement d'anciens messages → ajouter EN HAUT
         const previousHeight = receivedDiv.scrollHeight;
 
         if (data.messages) {
-          // Ajouter les messages au début (plus anciens en haut)
           data.messages.reverse().forEach((msg) => {
             prependMessage(
               receivedDiv,
@@ -97,7 +110,6 @@ export function handleChatClick(e) {
           });
         }
 
-        // ✅ Garder la position de scroll
         const newHeight = receivedDiv.scrollHeight;
         receivedDiv.scrollTop = newHeight - previousHeight;
       }
@@ -115,9 +127,9 @@ export function handleChatClick(e) {
 
 // ✅ Ouvrir une conversation
 function openConversation(main, ws, userId, userName) {
-  // ✅ Reset pagination
   currentOffset = 0;
   currentReceiverID = userId;
+  currentChatUserId = userId;
   hasMoreMessages = true;
   isLoadingHistory = false;
 
@@ -141,7 +153,7 @@ function openConversation(main, ws, userId, userName) {
   );
   currentOffset = 10;
 
-  // ✅ Détecter scroll en haut → charger les 10 suivants
+  // ✅ Scroll en haut → charger les anciens messages
   const receivedDiv = document.querySelector(".message-received");
   receivedDiv.addEventListener("scroll", () => {
     if (receivedDiv.scrollTop === 0 && !isLoadingHistory && hasMoreMessages) {
@@ -180,7 +192,7 @@ function openConversation(main, ws, userId, userName) {
   });
 }
 
-// ✅ Ajouter un message EN BAS (nouveau message)
+// ✅ Ajouter un message EN BAS
 function appendMessage(container, sender, content, createdAt, isMine) {
   const msgEl = document.createElement("div");
   msgEl.classList.add("msg-bubble", isMine ? "msg-sent" : "msg-received");
@@ -192,7 +204,7 @@ function appendMessage(container, sender, content, createdAt, isMine) {
   container.scrollTop = container.scrollHeight;
 }
 
-// ✅ Ajouter un message EN HAUT (ancien message chargé)
+// ✅ Ajouter un message EN HAUT
 function prependMessage(container, sender, content, createdAt, isMine) {
   const msgEl = document.createElement("div");
   msgEl.classList.add("msg-bubble", isMine ? "msg-sent" : "msg-received");
@@ -200,5 +212,5 @@ function prependMessage(container, sender, content, createdAt, isMine) {
     <span class="msg-time">-${new Date(createdAt).toLocaleTimeString()}-</span>
     <strong>${sender}:</strong>
     <p>${content}</p>`;
-  container.prepend(msgEl); // ✅ Ajoute en haut
+  container.prepend(msgEl);
 }
