@@ -18,6 +18,7 @@ func Server(port string, db *sql.DB) {
 	mux.HandleFunc("/auth/login", auth.LoginHandler(db))
 	mux.HandleFunc("/post", posts.NewPostHandler(db))
 	mux.HandleFunc("/comment", comments.NewCommentHandler(db))
+	mux.HandleFunc("/postPage", posts.DisplayPostHandler(db))
 
 	// Quand l'utilisateur arrive, affiche mainPage.
 	mux.HandleFunc("/", users.MainPage)

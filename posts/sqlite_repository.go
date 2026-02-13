@@ -3,6 +3,7 @@ package posts
 import (
 	"database/sql"
 	"fmt"
+	"real-time-forum/comments"
 )
 
 // --- Fonctions Sauvegarde de Data
@@ -54,4 +55,32 @@ func GetPostID(db *sql.DB, post *Post) (*Post, error) {
 		return &Post{}, err
 	}
 	return post, nil
+}
+
+func GetPostData(db *sql.DB, id int) (Post, []comments.Comment, error) {
+	var post Post
+	queryPost := `SELECT title, content, authorid FROM post WHERE id = ?`
+	row := db.QueryRow(queryPost, id)
+	err := row.Scan(&post.Title, &post.Content, &post.AuthorID)
+	if err != nil {
+		return Post{}, []comments.Comment{}, err
+	}
+
+	var coms []comments.Comment
+	var comment comments.Comment
+	queryComment := `SELECT id, authorid, content FROM comments WHERE postid = ?`
+	rows, err := db.Query(queryComment, id)
+
+	for rows.Next() {
+		if err := rows.Scan(&comment.ID, &comment.AuthorID, &comment.Content); err != nil {
+			if err == sql.ErrNoRows {
+				return post, []comments.Comment{}, nil
+			}
+			return Post{}, []comments.Comment{}, err
+		}
+
+		coms = append(coms, comment)
+	}
+
+	return post, coms, nil
 }

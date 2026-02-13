@@ -1,6 +1,9 @@
 package posts
 
-import "time"
+import (
+	"real-time-forum/comments"
+	"time"
+)
 
 type Post struct {
 	ID          int
@@ -10,4 +13,9 @@ type Post struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	CategoryIDs []int `json:"category_ids"`
+}
+
+type PostWithCommentsResponse struct {
+	Post     Post               `json:"post"`
+	Comments []comments.Comment `json:"comments"`
 }

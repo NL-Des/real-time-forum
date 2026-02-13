@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"real-time-forum/shared"
+	"strconv"
 )
 
 func NewPostHandler(db *sql.DB) http.HandlerFunc {
@@ -55,4 +56,43 @@ func NewPostHandler(db *sql.DB) http.HandlerFunc {
 		})
 	}
 
+}
+
+func DisplayPostHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		referer := r.Header.Get("Referer")
+		if referer == "" {
+			referer = "/"
+		}
+
+		//reception id post
+		idStr := r.URL.Query().Get("id")
+
+		postId, err := strconv.Atoi(idStr)
+		if err != nil || postId < 1 {
+			log.Printf("Erreur conversion ou id invalide: %v, retour à la page précédente", err)
+			shared.RespondError(w, http.StatusInternalServerError, err)
+			http.Redirect(w, r, referer, http.StatusSeeOther)
+			return
+		}
+
+		// récuperer toutes les données du post
+
+		currentPost, currentCmts, err := GetPostData(db, postId)
+		if err != nil {
+			log.Printf("Erreur récupération des données du post: %v", err)
+			shared.RespondError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		//renvoyer les données à afficher
+		response := PostWithCommentsResponse{
+			Post:     currentPost,
+			Comments: currentCmts,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	}
 }
