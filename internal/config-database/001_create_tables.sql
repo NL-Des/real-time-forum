@@ -3,13 +3,13 @@ PRAGMA foreign_keys = ON;
 /* Table des utilisateurs */
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    UserName TEXT NOT NULL UNIQUE CHECK(LENGTH(UserName) >= 3),
+    UserName TEXT NOT NULL UNIQUE CHECK(LENGTH(UserName) >= 1),
     Age INTEGER NOT NULL CHECK(Age >= 15), /* limite d'âge */
     Gender TEXT NOT NULL CHECK(Gender IN('Man', 'Woman', 'Other')), /* N'accepte que les termes indiqués */
     FirstName TEXT NOT NULL,
     LastName TEXT NOT NULL,
     Email TEXT NOT NULL UNIQUE,
-    Password TEXT NOT NULL CHECK(LENGTH(Password) >= 8), /* Taille minimale du mdp */
+    Password TEXT NOT NULL CHECK(LENGTH(Password) >= 1), /* Taille minimale du mdp */
     userOnline INTEGER DEFAULT 0 /* 0 = hors ligne | 1 = en ligne */
 );
 
@@ -61,4 +61,15 @@ CREATE TABLE IF NOT EXISTS post_categories (
 	/* Grâce à la clé primaire, on ne peut pas avoir plusieurs fois la même catégorie pour un même post. */
     FOREIGN KEY (PostID) REFERENCES post(ID),
     FOREIGN KEY (CategoryID) REFERENCES category(ID)
+);
+
+CREATE TABLE IF NOT EXISTS session (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserID INTEGER NOT NULL,
+    Token TEXT NOT NULL UNIQUE,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP, /* Moment de la connexion */
+    ExpiresAt DATETIME NOT NULL, /* 24 heures ? */
+    UserAgent TEXT,
+    IP TEXT,
+    FOREIGN KEY (UserID) REFERENCES users(id)
 );

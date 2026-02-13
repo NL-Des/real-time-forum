@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -111,4 +112,113 @@
 </body>
 <script type="module" src="frontend/app.js"></script>
 
+=======
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="frontend/style.css" />
+  <title>Real time forum</title>
+</head>
+
+<body>
+
+  <div id="auth-container">
+    <h1 class="first-title">Welcome to the Real time forum</h1>
+    <div id="error-message" class="error-message"></div>
+    <div id="success-message" class="success-message"></div>
+    <form class="connection-form">
+
+      <div class="form-group">
+        <label for="register-username">Pseudo</label>
+        <input type="text" id="register-username" name="username" placeholder="pseudo ou email" required />
+      </div>
+      <div class="form-group">
+        <label for="password" minlength="1">Password</label>
+        <input type="password" id="password" name="password" placeholder="password" minlength="1" required>
+      </div>
+      <button type="submit" class="connection">
+        Connection
+      </button>
+      <div class="create-account">
+        <p>Create account ?</p>
+        <button type="button" class="new-account">Click here</button>
+      </div>
+    </form>
+    <form id="register-form" class="register-form" method="post" style="display: none;">
+      <div class="double-item">
+        <div class="form-group">
+          <label for="Nickname">Nickname</label>
+          <input type="text" id="Nickname" name="Nickname" placeholder="Your Nickname" required minlength="6" >
+        </div>
+
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" name="Email" placeholder="your@email.com" required>
+        </div>
+      </div>
+      <div class="double-item">
+        <div class="form-group">
+          <label for="Age">Age</label>
+          <input type="number" id="Age" name="Age" placeholder="Your Age" min="0" required>
+        </div>
+        <div class="form-group">
+          <label name="Gender" for="Gender">Gender</label>
+          <select id="Gender" name="Gender">
+            <option value="Default">---</option>
+            <option value="Woman">woman</option>
+            <option value="Man">man</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+      </div>
+      <div class="double-item">
+        <div class="form-group">
+          <label for="FirstName">First Name</label>
+          <input type="text" id="FirstName" name="FirstName" placeholder="Your First Name" required>
+        </div>
+        <div class="form-group">
+          <label for="LastName">Last Name</label>
+          <input type="text" id="LastName" name="LastName" placeholder="Your Last Name" required>
+        </div>
+      </div>
+      <div class="double-item">
+        <div class="form-group">
+          <label for="register-password" minlength="1">Password</label>
+          <input type="password" id="register-password" name="Password" placeholder="••••••••" required
+            autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label for="register-confirm-password" minlength="1">Confirm Password</label>
+          <input type="password" id="register-confirm-password" name="Confirm-Password" placeholder="••••••••" required
+            autocomplete="new-password">
+        </div>
+      </div>
+      <div class="button-register-form">
+        <button type="submit" class="creation-account">Sign Up</button>
+        <button type="button" class="new-account-comeback">Come back</button>
+      </div>
+
+
+    </form>
+  </div>
+  </div>
+  <div id="app-container" style="display: none;">
+    <header id="header"></header>
+
+    <div id="core-content">
+      <aside id="sidebar"></aside>
+      <main id="main-content"></main>
+    </div>
+  </div>
+
+
+  <footer>Realise by Z01 students</footer>
+</body>
+<script type="module" src="frontend/app.js"></script>
+
+>>>>>>> 5a682ad4cc50aeed91236e91d9737b4568b99b5f
 </html>
