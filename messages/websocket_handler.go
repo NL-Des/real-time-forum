@@ -12,35 +12,30 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// Configuration du WebSocket
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
 }
 
-// Structure pour un client connecté
 type Client struct {
 	Conn *websocket.Conn
 	Name string
 }
 
-// Map pour gérer les clients connectés : userID → Client
 var clients = make(map[int]*Client)
-
-// Channel pour transmettre les messages
 var broadcast = make(chan IncomingMsg)
 
-// ✅ Structure pour les messages entrants (depuis le frontend)
+// ✅ Structure pour les messages entrants — ajout du champ Offset
 type IncomingMsg struct {
 	Type       string `json:"type"`
 	ReceiverID int    `json:"receiver_id"`
 	Content    string `json:"content"`
-	SenderID   int    // rempli côté serveur
-	SenderName string // rempli côté serveur
+	Offset     int    `json:"offset"` // ✅ NOUVEAU
+	SenderID   int
+	SenderName string
 }
 
-// ✅ Structure pour les messages sortants (vers le frontend)
 type OutgoingMsg struct {
 	Type      string `json:"type"`
 	Sender    string `json:"sender"`
@@ -49,7 +44,6 @@ type OutgoingMsg struct {
 	CreatedAt string `json:"created_at"`
 }
 
-// ✅ Structure pour l'historique
 type HistoryMsg struct {
 	Sender    string `json:"sender"`
 	SenderID  int    `json:"sender_id"`
@@ -58,18 +52,15 @@ type HistoryMsg struct {
 	IsMine    bool   `json:"is_mine"`
 }
 
-// Structure pour la liste des utilisateurs en ligne
 type OnlineUser struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-// Variable globale pour la BDD
 var database *sql.DB
 
-// Handler WebSocket
 func HandleWebSocket(db *sql.DB) http.HandlerFunc {
-	database = db // ✅ Stocker la référence à la BDD
+	database = db
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID := r.Context().Value(auth.UserIDKey).(int)
@@ -91,7 +82,6 @@ func HandleWebSocket(db *sql.DB) http.HandlerFunc {
 		clients[userID] = &Client{Conn: conn, Name: name}
 		fmt.Println("Client connecté !", name, "| Total:", len(clients))
 
-		// ✅ Envoyer la liste des users en ligne à TOUS
 		broadcastOnlineUsers()
 
 		defer func() {
@@ -100,7 +90,6 @@ func HandleWebSocket(db *sql.DB) http.HandlerFunc {
 			broadcastOnlineUsers()
 		}()
 
-		// Écouter les messages
 		for {
 			_, msgBytes, err := conn.ReadMessage()
 			if err != nil {
@@ -122,13 +111,13 @@ func HandleWebSocket(db *sql.DB) http.HandlerFunc {
 				broadcast <- incoming
 
 			case "get_history":
-				sendHistory(conn, userID, incoming.ReceiverID)
+				// ✅ Passe l'offset reçu du frontend
+				sendHistory(conn, userID, incoming.ReceiverID, incoming.Offset)
 			}
 		}
 	}
 }
 
-// ✅ Envoyer la liste des utilisateurs en ligne à tous
 func broadcastOnlineUsers() {
 	users := []OnlineUser{}
 	for id, client := range clients {
@@ -148,14 +137,12 @@ func broadcastOnlineUsers() {
 	}
 }
 
-// ✅ Sauvegarder en BDD + envoyer au destinataire
 func HandleMessages() {
 	for {
 		msg := <-broadcast
 
 		now := time.Now()
 
-		// ✅ Sauvegarder en BDD
 		_, err := database.Exec(`
             INSERT INTO messages (SenderID, ReceiverID, Content, CreatedAt)
             VALUES (?, ?, ?, ?)`,
@@ -168,7 +155,6 @@ func HandleMessages() {
 
 		fmt.Println("Message sauvegardé:", msg.SenderName, "→", msg.ReceiverID, ":", msg.Content)
 
-		// ✅ Construire la réponse
 		response := OutgoingMsg{
 			Type:      "message",
 			Sender:    msg.SenderName,
@@ -179,7 +165,6 @@ func HandleMessages() {
 
 		jsonResponse, _ := json.Marshal(response)
 
-		// ✅ Envoyer au destinataire s'il est en ligne
 		if receiver, ok := clients[msg.ReceiverID]; ok {
 			err := receiver.Conn.WriteMessage(websocket.TextMessage, jsonResponse)
 			if err != nil {
@@ -191,16 +176,18 @@ func HandleMessages() {
 	}
 }
 
-// ✅ Envoyer l'historique des messages entre 2 utilisateurs
-func sendHistory(conn *websocket.Conn, userID int, otherID int) {
+// ✅ Envoyer l'historique avec LIMIT 10 OFFSET
+func sendHistory(conn *websocket.Conn, userID int, otherID int, offset int) {
 	rows, err := database.Query(`
         SELECT SenderID, Content, CreatedAt
         FROM messages
         WHERE (SenderID = ? AND ReceiverID = ?)
            OR (SenderID = ? AND ReceiverID = ?)
-        ORDER BY CreatedAt ASC`,
+        ORDER BY CreatedAt DESC
+        LIMIT 10 OFFSET ?`,
 		userID, otherID,
 		otherID, userID,
+		offset,
 	)
 	if err != nil {
 		log.Println("Erreur historique:", err)
@@ -215,7 +202,6 @@ func sendHistory(conn *websocket.Conn, userID int, otherID int) {
 		var content, createdAt string
 		rows.Scan(&senderID, &content, &createdAt)
 
-		// ✅ Récupérer le nom du sender
 		senderName := ""
 		if client, ok := clients[senderID]; ok {
 			senderName = client.Name
@@ -232,9 +218,17 @@ func sendHistory(conn *websocket.Conn, userID int, otherID int) {
 		})
 	}
 
+	// ✅ Inverser pour afficher du plus ancien au plus récent
+	for i, j := 0, len(messages)-1; i < j; i, j = i+1, j-1 {
+		messages[i], messages[j] = messages[j], messages[i]
+	}
+
+	// ✅ Envoyer avec hasMore pour savoir s'il reste des messages
 	response, _ := json.Marshal(map[string]interface{}{
 		"type":     "message_history",
 		"messages": messages,
+		"offset":   offset,
+		"has_more": len(messages) == 10, // ✅ s'il y a 10 résultats, il y en a peut-être plus
 	})
 
 	conn.WriteMessage(websocket.TextMessage, response)

@@ -1,3 +1,8 @@
+let currentOffset = 0;
+let currentReceiverID = null;
+let isLoadingHistory = false;
+let hasMoreMessages = true;
+
 export function handleChatClick(e) {
   console.log("clique chat");
   e.preventDefault();
@@ -51,10 +56,16 @@ export function handleChatClick(e) {
       }
     }
 
-    // ✅ Historique des messages
+    // ✅ Historique des messages avec pagination
     if (data.type === "message_history") {
       const receivedDiv = document.querySelector(".message-received");
-      if (receivedDiv) {
+      if (!receivedDiv) return;
+
+      isLoadingHistory = false;
+      hasMoreMessages = data.has_more;
+
+      // ✅ Premier chargement (offset 0) → remplacer le contenu
+      if (data.offset === 0) {
         receivedDiv.innerHTML = "";
         if (data.messages) {
           data.messages.forEach((msg) => {
@@ -67,6 +78,28 @@ export function handleChatClick(e) {
             );
           });
         }
+        // ✅ Scroll tout en bas
+        receivedDiv.scrollTop = receivedDiv.scrollHeight;
+      } else {
+        // ✅ Chargement d'anciens messages → ajouter EN HAUT
+        const previousHeight = receivedDiv.scrollHeight;
+
+        if (data.messages) {
+          // Ajouter les messages au début (plus anciens en haut)
+          data.messages.reverse().forEach((msg) => {
+            prependMessage(
+              receivedDiv,
+              msg.sender,
+              msg.content,
+              msg.created_at,
+              msg.is_mine,
+            );
+          });
+        }
+
+        // ✅ Garder la position de scroll
+        const newHeight = receivedDiv.scrollHeight;
+        receivedDiv.scrollTop = newHeight - previousHeight;
       }
     }
   };
@@ -82,6 +115,12 @@ export function handleChatClick(e) {
 
 // ✅ Ouvrir une conversation
 function openConversation(main, ws, userId, userName) {
+  // ✅ Reset pagination
+  currentOffset = 0;
+  currentReceiverID = userId;
+  hasMoreMessages = true;
+  isLoadingHistory = false;
+
   main.innerHTML = `<h2>Message</h2>
     <div class="messages">
       <div class="nameOfUser">${userName}</div>
@@ -92,13 +131,33 @@ function openConversation(main, ws, userId, userName) {
       <button class="send-message">Envoyer</button>
     </div>`;
 
-  // ✅ Demander l'historique
+  // ✅ Charger les 10 premiers messages
   ws.send(
     JSON.stringify({
       type: "get_history",
       receiver_id: userId,
+      offset: 0,
     }),
   );
+  currentOffset = 10;
+
+  // ✅ Détecter scroll en haut → charger les 10 suivants
+  const receivedDiv = document.querySelector(".message-received");
+  receivedDiv.addEventListener("scroll", () => {
+    if (receivedDiv.scrollTop === 0 && !isLoadingHistory && hasMoreMessages) {
+      isLoadingHistory = true;
+
+      ws.send(
+        JSON.stringify({
+          type: "get_history",
+          receiver_id: currentReceiverID,
+          offset: currentOffset,
+        }),
+      );
+
+      currentOffset += 10;
+    }
+  });
 
   // ✅ Envoyer un message
   document.querySelector(".send-message").addEventListener("click", () => {
@@ -114,7 +173,6 @@ function openConversation(main, ws, userId, userName) {
       }),
     );
 
-    // ✅ Afficher immédiatement côté envoyeur
     const receivedDiv = document.querySelector(".message-received");
     appendMessage(receivedDiv, "Moi", content, new Date().toISOString(), true);
 
@@ -122,16 +180,25 @@ function openConversation(main, ws, userId, userName) {
   });
 }
 
-// ✅ Ajouter une bulle de message
+// ✅ Ajouter un message EN BAS (nouveau message)
 function appendMessage(container, sender, content, createdAt, isMine) {
   const msgEl = document.createElement("div");
   msgEl.classList.add("msg-bubble", isMine ? "msg-sent" : "msg-received");
   msgEl.innerHTML = `
-  <span class="msg-time">-${new Date(createdAt).toLocaleTimeString()}-</span>
+    <span class="msg-time">-${new Date(createdAt).toLocaleTimeString()}-</span>
     <strong>${sender}:</strong>
     <p>${content}</p>`;
   container.appendChild(msgEl);
-
-  // ✅ Auto-scroll vers le bas
   container.scrollTop = container.scrollHeight;
+}
+
+// ✅ Ajouter un message EN HAUT (ancien message chargé)
+function prependMessage(container, sender, content, createdAt, isMine) {
+  const msgEl = document.createElement("div");
+  msgEl.classList.add("msg-bubble", isMine ? "msg-sent" : "msg-received");
+  msgEl.innerHTML = `
+    <span class="msg-time">-${new Date(createdAt).toLocaleTimeString()}-</span>
+    <strong>${sender}:</strong>
+    <p>${content}</p>`;
+  container.prepend(msgEl); // ✅ Ajoute en haut
 }
