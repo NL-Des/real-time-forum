@@ -6,8 +6,9 @@ import (
 	"log"
 	"os"
 	"real-time-forum/auth"
-	"real-time-forum/internal/config-database"
-	"real-time-forum/server" // Ceci permet d'appeler la fonction qui se trouve dans le fichier.
+	"real-time-forum/internal/config-database" // Ceci permet d'appeler la fonction qui se trouve dans le fichier.
+	"real-time-forum/messages"
+	"real-time-forum/server"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -57,7 +58,6 @@ func main() {
 		log.Fatalf("Database error: %v", err)
 	}
 	defer db.Close()
-
 	// MARK: Server
 	// Nettoyage immédiat des sessions au démarrage
 	if err := auth.CleanExpiredSessions(db); err != nil {
@@ -79,7 +79,15 @@ func main() {
 			}
 		}
 	}()
+	// MARK: WebSocket
+	// Lancer la goroutine de diffusion
+	go messages.HandleMessages()
 
-	// Lancement du serveur GO.
+	fmt.Println("WebSocket disponible sur ws://localhost" + port + "/ws")
+	// Routes HTTP normales (à adapter selon votre code)
+	// http.HandleFunc("/", yourHandler)
+	// http.HandleFunc("/login", yourLoginHandler)
+	// etc...
+
 	server.Server(port, db)
 }

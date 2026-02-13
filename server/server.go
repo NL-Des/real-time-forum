@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"real-time-forum/auth"
+	"real-time-forum/messages"
 	"real-time-forum/posts"
 	"real-time-forum/users"
 )
@@ -21,12 +22,13 @@ func Server(port string, db *sql.DB) {
 	// routes protégées
 	mux.Handle("/auth/me", auth.AuthMiddleware(db)(http.HandlerFunc(auth.CurrentUserHandler(db))))
 	mux.Handle("/post", auth.AuthMiddleware(db)(http.HandlerFunc(posts.NewPostHandler(db))))
-
+	mux.Handle("/ws", auth.AuthMiddleware(db)(http.HandlerFunc(messages.HandleWebSocket(db))))
 	// Quand l'utilisateur arrive, affiche mainPage.
 	mux.HandleFunc("/", users.MainPage)
 	// servir les fichiers static
 	fs := http.FileServer(http.Dir("./frontend"))
 	mux.Handle("/frontend/", http.StripPrefix("/frontend/", fs))
+
 	// Lancement serveur Go
 	fmt.Printf("Serveur démarré sur le port %s \n", port)
 	fmt.Printf("Page d'accès : http://localhost:8080/ \n")
