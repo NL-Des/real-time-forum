@@ -1,6 +1,7 @@
 import {renderCreatePost} from "./new-post.js";
 import {Logout} from "./authentication.js";
 import {handleChatClick} from "./chat.js";
+import {initWebSocket, getWebSocket} from "./websocket.js"; // ✅ Import
 
 const header = document.getElementById("header");
 const main = document.getElementById("main-content");
@@ -17,62 +18,86 @@ function buildHeader() {
     <button id="chat-btn">Chat</button>
   </nav>
   <div class="forum-section">
-  <div class="profile-section">
+    <div class="profile-section">
       <p id="welcome-message"></p>
       <img src="./frontend/img/profil.gif" alt="image profil" class="profil-icon">
-      </div>
-      <button id="logoutBtn">Déconnexion</button>
     </div>
-`;
+    <button id="logoutBtn">Déconnexion</button>
+  </div>`;
 
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
-    try {
-      const response = await fetch("/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        alert("Déconnecté avec succès !");
-      } else {
-        alert("Erreur lors de la déconnexion.");
-      }
-    } catch (err) {
-      console.error("Erreur fetch logout :", err);
-    }
-  });
-
-  const postBtn = document.getElementById("new-post-btn");
-  postBtn.addEventListener("click", renderCreatePost);
-  const logoutBtn = document.getElementById("logoutBtn");
-  logoutBtn.addEventListener("click", Logout);
-  const chatBtn = document.querySelector("#chat-btn");
-  chatBtn ? console.log("bouton exist") : console.log("bouton introuvable");
-  chatBtn.addEventListener("click", (e) => {
-    console.log("click chat");
-    handleChatClick(e);
-  });
+  document
+    .getElementById("new-post-btn")
+    .addEventListener("click", renderCreatePost);
+  document.getElementById("logoutBtn").addEventListener("click", Logout);
+  document
+    .getElementById("chat-btn")
+    .addEventListener("click", handleChatClick);
 }
+
 function buildSidebar() {
-  sideBar.innerHTML = `<h2>Users</h2>
-  <div class="users-list"></div>
-  `;
+  sideBar.innerHTML = `<h2>Utilisateurs en ligne</h2>
+  <div class="users-list"></div>`;
+
+  // ✅ Initialiser WebSocket et écouter les utilisateurs
+  const ws = initWebSocket();
+
+  ws.onmessage = function (event) {
+    const data = JSON.parse(event.data);
+
+    // ✅ Mise à jour de la liste des utilisateurs
+    if (data.type === "online_users") {
+      updateUsersList(data.users);
+    }
+
+    // ✅ Notification pour un nouveau message
+    if (data.type === "message") {
+      const userItem = document.querySelector(
+        `.user-item[data-user-id="${data.sender_id}"]`,
+      );
+      if (userItem) {
+        userItem.classList.add("has-notification");
+      }
+    }
+  };
+}
+
+// ✅ Fonction pour mettre à jour la liste des utilisateurs
+function updateUsersList(users) {
+  const usersList = document.querySelector(".users-list");
+  if (!usersList) return;
+
+  usersList.innerHTML = "";
+
+  users.forEach((user) => {
+    const userEl = document.createElement("div");
+    userEl.classList.add("user-item");
+    userEl.textContent = user.name;
+    userEl.dataset.userId = user.id;
+
+    // ✅ Cliquer sur un utilisateur pour ouvrir le chat
+    userEl.addEventListener("click", () => {
+      userEl.classList.remove("has-notification");
+      handleChatClick(null, user.id, user.name); // ✅ Ouvrir le chat
+    });
+
+    usersList.appendChild(userEl);
+  });
 }
 
 function buildMain() {
   main.innerHTML = `<h2>Posts</h2>
   <div class="posts-header">
-  			<span>Titre</span>
-  			<span>Catégorie(s)</span>
-  			<span>Texte</span>
-		</div>`;
+    <span>Titre</span>
+    <span>Catégorie(s)</span>
+    <span>Texte</span>
+  </div>`;
 }
 
 function showApp() {
   document.getElementById("auth-container").style.display = "none";
   document.getElementById("app-container").style.display = "contents";
   buildHeader();
-  buildSidebar();
+  buildSidebar(); // ✅ Affiche les utilisateurs
   buildMain();
 }
 

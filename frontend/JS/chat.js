@@ -1,28 +1,39 @@
+import {getWebSocket} from "./websocket.js"; // ✅ Import du WebSocket global
+
 let currentOffset = 0;
 let currentReceiverID = null;
 let isLoadingHistory = false;
 let hasMoreMessages = true;
 let currentChatUserId = null;
 
-export function handleChatClick(e) {
+// ✅ Fonction principale pour gérer le chat
+export function handleChatClick(e, userId = null, userName = null) {
+  if (e) e.preventDefault();
   console.log("clique chat");
-  e.preventDefault();
 
   const main = document.querySelector("#main-content");
+  const ws = getWebSocket(); // ✅ Utiliser le WebSocket global
 
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    console.error("❌ WebSocket non connecté");
+    return;
+  }
+
+  // ✅ Si userId et userName sont fournis, ouvrir directement la conversation
+  if (userId && userName) {
+    openConversation(main, ws, userId, userName);
+    return;
+  }
+
+  // ✅ Sinon, afficher la liste des utilisateurs
   main.innerHTML = `<h2>Message</h2>
    <div class="messages">
-     <div class="users-list"></div>
+     <div style="align-items: center; font-size: 1.2rem;">Choisissez un utilisateur</div>
    </div>`;
 
   currentChatUserId = null;
 
-  const ws = new WebSocket("ws://localhost:8080/ws");
-
-  ws.onopen = function () {
-    console.log("Connecté au WebSocket");
-  };
-
+  // ✅ Écouter les messages WebSocket
   ws.onmessage = function (event) {
     const data = JSON.parse(event.data);
 
@@ -64,6 +75,7 @@ export function handleChatClick(e) {
           );
         }
       } else {
+        // ✅ Ajouter une notification sur l'utilisateur dans la sidebar
         const userItem = document.querySelector(
           `.user-item[data-user-id="${senderId}"]`,
         );
@@ -82,6 +94,7 @@ export function handleChatClick(e) {
       hasMoreMessages = data.has_more;
 
       if (data.offset === 0) {
+        // ✅ Charger les premiers messages
         receivedDiv.innerHTML = "";
         if (data.messages) {
           data.messages.forEach((msg) => {
@@ -96,6 +109,7 @@ export function handleChatClick(e) {
         }
         receivedDiv.scrollTop = receivedDiv.scrollHeight;
       } else {
+        // ✅ Charger les messages plus anciens (pagination)
         const previousHeight = receivedDiv.scrollHeight;
 
         if (data.messages) {
@@ -115,14 +129,6 @@ export function handleChatClick(e) {
       }
     }
   };
-
-  ws.onclose = function () {
-    console.log("❌ Déconnecté du WebSocket");
-  };
-
-  ws.onerror = function (error) {
-    console.log("⚠️ Erreur WebSocket:", error);
-  };
 }
 
 // ✅ Ouvrir une conversation
@@ -133,9 +139,8 @@ function openConversation(main, ws, userId, userName) {
   hasMoreMessages = true;
   isLoadingHistory = false;
 
-  main.innerHTML = `<h2>Message</h2>
+  main.innerHTML = `<h2>Message avec ${userName}</h2>
     <div class="messages">
-      <div class="nameOfUser">${userName}</div>
       <div class="message-received"></div>
       <div class="message-content">
         <textarea class="message-sender" placeholder="Écris ton message..."></textarea>
@@ -151,14 +156,14 @@ function openConversation(main, ws, userId, userName) {
       offset: 0,
     }),
   );
+
   currentOffset = 10;
 
-  // ✅ Scroll en haut → charger les anciens messages
+  // ✅ Détecter le scroll pour charger plus de messages
   const receivedDiv = document.querySelector(".message-received");
   receivedDiv.addEventListener("scroll", () => {
     if (receivedDiv.scrollTop === 0 && !isLoadingHistory && hasMoreMessages) {
       isLoadingHistory = true;
-
       ws.send(
         JSON.stringify({
           type: "get_history",
@@ -204,7 +209,7 @@ function appendMessage(container, sender, content, createdAt, isMine) {
   container.scrollTop = container.scrollHeight;
 }
 
-// ✅ Ajouter un message EN HAUT
+// ✅ Ajouter un message EN HAUT (pagination)
 function prependMessage(container, sender, content, createdAt, isMine) {
   const msgEl = document.createElement("div");
   msgEl.classList.add("msg-bubble", isMine ? "msg-sent" : "msg-received");
