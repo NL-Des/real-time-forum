@@ -23,6 +23,7 @@ func Server(port string, db *sql.DB) {
 	mux.Handle("/auth/me", auth.AuthMiddleware(db)(http.HandlerFunc(auth.CurrentUserHandler(db))))
 	mux.Handle("/post", auth.AuthMiddleware(db)(http.HandlerFunc(posts.NewPostHandler(db))))
 	mux.Handle("/ws", auth.AuthMiddleware(db)(http.HandlerFunc(messages.HandleWebSocket(db))))
+	mux.Handle("/api/users", auth.AuthMiddleware(db)(http.HandlerFunc(users.GetAllUsersHandler(db))))
 	// Quand l'utilisateur arrive, affiche mainPage.
 	mux.HandleFunc("/", users.MainPage)
 	// servir les fichiers static

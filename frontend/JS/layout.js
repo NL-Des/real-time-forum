@@ -1,7 +1,7 @@
 import {renderCreatePost} from "./new-post.js";
 import {Logout} from "./authentication.js";
 import {handleChatClick} from "./chat.js";
-import {initWebSocket, getWebSocket} from "./websocket.js"; // ✅ Import
+import {initWebSocket, addMessageHandler} from "./websocket.js";
 
 const header = document.getElementById("header");
 const main = document.getElementById("main-content");
@@ -35,52 +35,130 @@ function buildHeader() {
 }
 
 function buildSidebar() {
-  sideBar.innerHTML = `<h2>Utilisateurs en ligne</h2>
+  sideBar.innerHTML = `<h2>Utilisateurs</h2>
   <div class="users-list"></div>`;
 
-  // ✅ Initialiser WebSocket et écouter les utilisateurs
+  // ✅ Initialiser WebSocket AVANT de charger les utilisateurs
   const ws = initWebSocket();
 
-  ws.onmessage = function (event) {
-    const data = JSON.parse(event.data);
+  // ✅ Attendre que le WebSocket soit connecté
+  ws.addEventListener("open", () => {
+    console.log("✅ WebSocket prêt, chargement utilisateurs...");
+    loadAllUsers();
+  });
 
-    // ✅ Mise à jour de la liste des utilisateurs
-    if (data.type === "online_users") {
-      updateUsersList(data.users);
-    }
+  // ✅ Si déjà connecté, charger immédiatement
+  if (ws.readyState === WebSocket.OPEN) {
+    loadAllUsers();
+  }
 
-    // ✅ Notification pour un nouveau message
-    if (data.type === "message") {
-      const userItem = document.querySelector(
-        `.user-item[data-user-id="${data.sender_id}"]`,
-      );
-      if (userItem) {
-        userItem.classList.add("has-notification");
-      }
-    }
-  };
+  // ✅ Enregistrer le gestionnaire de messages pour la sidebar
+  addMessageHandler(handleSidebarMessages);
 }
 
-// ✅ Fonction pour mettre à jour la liste des utilisateurs
-function updateUsersList(users) {
+// ✅ Gestionnaire de messages WebSocket pour la sidebar
+function handleSidebarMessages(data) {
+  // ✅ Mise à jour des utilisateurs en ligne
+  if (data.type === "online_users") {
+    console.log("📡 [SIDEBAR] Mise à jour utilisateurs:", data.users);
+    updateUsersList(data.users);
+  }
+
+  // ✅ Notification pour nouveau message
+  if (data.type === "message") {
+    const userItem = document.querySelector(
+      `.user-item[data-user-id="${data.sender_id}"]`,
+    );
+    if (userItem) {
+      userItem.classList.add("has-notification");
+    }
+  }
+}
+
+// ✅ Charger tous les utilisateurs depuis l'API
+async function loadAllUsers() {
   const usersList = document.querySelector(".users-list");
-  if (!usersList) return;
 
-  usersList.innerHTML = "";
+  if (!usersList) {
+    console.error("❌ .users-list introuvable dans le DOM !");
+    return;
+  }
 
-  users.forEach((user) => {
-    const userEl = document.createElement("div");
-    userEl.classList.add("user-item");
-    userEl.textContent = user.name;
-    userEl.dataset.userId = user.id;
+  console.log("🔄 Chargement des utilisateurs...");
 
-    // ✅ Cliquer sur un utilisateur pour ouvrir le chat
-    userEl.addEventListener("click", () => {
-      userEl.classList.remove("has-notification");
-      handleChatClick(null, user.id, user.name); // ✅ Ouvrir le chat
+  try {
+    const response = await fetch("/api/users");
+    if (!response.ok) throw new Error("Erreur récupération utilisateurs");
+
+    const allUsers = await response.json();
+    console.log("✅ Utilisateurs chargés:", allUsers);
+
+    usersList.innerHTML = "";
+
+    if (allUsers.length === 0) {
+      console.warn("⚠️ Aucun utilisateur trouvé dans la base");
+      usersList.innerHTML = "<p>Aucun utilisateur</p>";
+      return;
+    }
+
+    allUsers.forEach((user) => {
+      const userEl = document.createElement("div");
+      userEl.classList.add("user-item");
+
+      // ✅ Par défaut, tous sont hors ligne (classe .offline)
+      userEl.classList.add("offline");
+
+      userEl.textContent = user.nickname;
+      userEl.dataset.userId = user.id;
+
+      userEl.addEventListener("click", () => {
+        userEl.classList.remove("has-notification");
+        handleChatClick(null, user.id, user.nickname);
+      });
+
+      usersList.appendChild(userEl);
     });
 
-    usersList.appendChild(userEl);
+    console.log(
+      `✅ ${allUsers.length} utilisateurs affichés (hors ligne par défaut)`,
+    );
+  } catch (error) {
+    console.error("❌ Erreur chargement utilisateurs:", error);
+  }
+}
+
+// ✅ Mettre à jour les statuts (en ligne/hors ligne)
+function updateUsersList(onlineUsers) {
+  const usersList = document.querySelector(".users-list");
+  if (!usersList) {
+    console.error("❌ .users-list introuvable pour mise à jour");
+    return;
+  }
+
+  // ✅ Créer un Set des IDs en ligne
+  const onlineUserIds = new Set(onlineUsers.map((u) => u.id));
+  console.log("🟢 Utilisateurs en ligne:", Array.from(onlineUserIds));
+
+  // ✅ Parcourir tous les .user-item et mettre à jour leur statut
+  const userItems = usersList.querySelectorAll(".user-item");
+
+  if (userItems.length === 0) {
+    console.warn("⚠️ Aucun .user-item trouvé pour mise à jour");
+    return;
+  }
+
+  userItems.forEach((userEl) => {
+    const userId = parseInt(userEl.dataset.userId);
+
+    if (onlineUserIds.has(userId)) {
+      // 🟢 En ligne → retirer .offline
+      userEl.classList.remove("offline");
+      console.log(`🟢 ${userEl.textContent} est EN LIGNE`);
+    } else {
+      // 🔴 Hors ligne → ajouter .offline
+      userEl.classList.add("offline");
+      console.log(`🔴 ${userEl.textContent} est HORS LIGNE`);
+    }
   });
 }
 
@@ -97,7 +175,7 @@ function showApp() {
   document.getElementById("auth-container").style.display = "none";
   document.getElementById("app-container").style.display = "contents";
   buildHeader();
-  buildSidebar(); // ✅ Affiche les utilisateurs
+  buildSidebar();
   buildMain();
 }
 
