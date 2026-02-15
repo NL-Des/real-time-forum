@@ -21,8 +21,8 @@ func Server(port string, db *sql.DB) {
 
 	// routes protégées
 	mux.Handle("/auth/me", auth.AuthMiddleware(db)(http.HandlerFunc(auth.CurrentUserHandler(db))))
-	mux.Handle("/post", auth.AuthMiddleware(db)(http.HandlerFunc(posts.NewPostHandler(db))))
-	mux.HandleFunc("/comment", auth.AuthMiddleware(db)(http.HandlerFunc(comments.NewCommentHandler(db))))
+	mux.Handle("/post", auth.AuthMiddleware(db)(http.HandlerFunc(posts.PostHandler(db))))
+	mux.Handle("/comment", auth.AuthMiddleware(db)(http.HandlerFunc(comments.NewCommentHandler(db))))
 
 	// Quand l'utilisateur arrive, affiche mainPage.
 	mux.HandleFunc("/", users.MainPage)

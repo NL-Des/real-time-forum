@@ -2,11 +2,12 @@ package posts
 
 import (
 	"real-time-forum/comments"
+	"real-time-forum/users"
 	"time"
 )
 
 type Post struct {
-	ID          int
+	ID          int    `json:"id"`
 	Title       string `json:"title"`
 	Content     string `json:"content"`
 	AuthorID    int    `json:"authorid"`
@@ -15,7 +16,10 @@ type Post struct {
 	CategoryIDs []int `json:"category_ids"`
 }
 
-type PostWithCommentsResponse struct {
-	Post     Post               `json:"post"`
-	Comments []comments.Comment `json:"comments"`
+type PostResponse struct {
+	ResponseNotif string                     `json:"notif"`
+	AllPosts      []Post                     `json:"allposts"`
+	Post          Post                       `json:"post"`
+	Comments      []comments.CommentResponse `json:"comments"`
+	Author        users.User                 `json:"author"`
 }

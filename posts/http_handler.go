@@ -9,91 +9,100 @@ import (
 	"strconv"
 )
 
-func NewPostHandler(db *sql.DB) http.HandlerFunc {
+func PostHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var newPost Post
-
-		// -- récupération données --
-		if r.Method == "POST" {
+		var response PostResponse
+		switch r.Method {
+		case "POST":
 			if err := json.NewDecoder(r.Body).Decode(&newPost); err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 				shared.RespondError(w, http.StatusBadRequest, err)
 				return
 			}
-		}
+			// Récupérer l'auteur grâce au cookie
 
-		// Récupérer l'auteur grâce au cookie
+			authorId, err := shared.GetUserIdByCookie(r, db)
+			if err != nil {
+				log.Println("<NewPostHandler> Error cannot get userId: ", err)
+				shared.RespondError(w, http.StatusInternalServerError, err)
+				return
+			}
 
-		// -- gestion d'erreurs --
-		// ajouter verif post existant
+			newPost.AuthorID = authorId
 
-		if err := IsValidFormat(newPost); err != nil {
-			log.Println("<NewPostHandler> Error invalid post: ", err)
-			shared.RespondError(w, http.StatusBadRequest, err)
-			return
-		}
+			// -- gestion d'erreurs --
+			// ajouter verif post existant
 
-		// -- sauvegarde db --
+			if err := IsValidFormat(newPost); err != nil {
+				log.Println("<NewPostHandler> Error invalid post: ", err)
+				shared.RespondError(w, http.StatusBadRequest, err)
+				return
+			}
 
-		if err := SavePost(db, &newPost); err != nil {
-			log.Println("<NewPostHandler> Error cannot save post: ", err)
-			shared.RespondError(w, http.StatusInternalServerError, err)
-			return
-		}
+			// -- sauvegarde db --
 
-		if err := SavePostCategories(db, &newPost); err != nil {
-			log.Println("<NewPostHandler> Error cannot save post categories: ", err)
-			shared.RespondError(w, http.StatusInternalServerError, err)
-			return
-		}
+			if err := SavePost(db, &newPost); err != nil {
+				log.Println("<NewPostHandler> Error cannot save post: ", err)
+				shared.RespondError(w, http.StatusInternalServerError, err)
+				return
+			}
 
-		// --- notification post ajouté ---
-		log.Println("New post saved into db")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": "post created",
-			"post":    newPost,
-		})
-	}
+			response = PostResponse{
+				ResponseNotif: "Post created",
+				Post:          newPost,
+			}
 
-}
+			log.Println("New post saved into db")
+		case "GET":
+			referer := r.Header.Get("Referer")
+			if referer == "" {
+				referer = "/"
+			}
 
-func DisplayPostHandler(db *sql.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+			//reception id post
+			idStr := r.URL.Query().Get("id")
 
-		referer := r.Header.Get("Referer")
-		if referer == "" {
-			referer = "/"
-		}
+			postId, err := strconv.Atoi(idStr)
+			if err != nil {
+				log.Printf("Erreur conversion ou id invalide: %v, retour à la page précédente", err)
+				shared.RespondError(w, http.StatusInternalServerError, err)
+				http.Redirect(w, r, referer, http.StatusSeeOther)
+				return
+			}
 
-		//reception id post
-		idStr := r.URL.Query().Get("id")
+			if postId == 0 {
+				allPosts, err := GetAllPosts(db)
+				if err != nil {
+					log.Printf("Erreur recuperation allPosts: %v", err)
+					shared.RespondError(w, http.StatusInternalServerError, err)
+				}
+				response = PostResponse{
+					ResponseNotif: "Sendind all posts",
+					AllPosts:      allPosts,
+				}
+			} else {
+				// récuperer toutes les données du post
 
-		postId, err := strconv.Atoi(idStr)
-		if err != nil || postId < 1 {
-			log.Printf("Erreur conversion ou id invalide: %v, retour à la page précédente", err)
-			shared.RespondError(w, http.StatusInternalServerError, err)
-			http.Redirect(w, r, referer, http.StatusSeeOther)
-			return
-		}
+				currentPost, currentCmts, currentAuthor, err := GetPostData(db, postId)
+				if err != nil {
+					log.Printf("Erreur récupération des données du post: %v", err)
+					shared.RespondError(w, http.StatusInternalServerError, err)
+					return
+				}
 
-		// récuperer toutes les données du post
-
-		currentPost, currentCmts, err := GetPostData(db, postId)
-		if err != nil {
-			log.Printf("Erreur récupération des données du post: %v", err)
-			shared.RespondError(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		//renvoyer les données à afficher
-		response := PostWithCommentsResponse{
-			Post:     currentPost,
-			Comments: currentCmts,
+				//renvoyer les données à afficher
+				response = PostResponse{
+					ResponseNotif: "Sending post",
+					Post:          currentPost,
+					Comments:      currentCmts,
+					Author:        currentAuthor,
+				}
+			}
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response)
 	}
+
 }

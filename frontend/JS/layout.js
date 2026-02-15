@@ -1,5 +1,6 @@
-<<<<<<< HEAD
-import { renderCreatePost } from "./new-post.js";
+import { renderCreatePost } from "./post-service.js";
+import { Logout } from "./authentication.js";
+import { postLayout } from "./display-post-comments.js";
 
 const header = document.getElementById("header");
 const main = document.getElementById("main-content");
@@ -7,41 +8,6 @@ const sideBar = document.getElementById("sidebar");
 
 function buildHeader() {
 	header.innerHTML = `<div class="header-left">
-    <h1>Real time forum</h1>
-  </div>
-
-  <nav class="header-nav">
-    <button id="new-post-btn">Nouveau post</button>
-    <button id="home-btn">Home</button>
-    <button>Catégories</button>
-    <button>Chat</button>
-  </nav>
-
-  <div class="header-right">
-    <span class="user-icon"> </span>
-  </div>`;
-
-	const postBtn = document.getElementById("new-post-btn");
-	postBtn.addEventListener("click", renderCreatePost);
-}
-
-function showApp() {
-	document.getElementById("auth-container").style.display = "none";
-	document.getElementById("app-container").style.display = "block";
-	buildHeader();
-}
-
-export { header, main, sideBar, buildHeader, showApp };
-=======
-import {renderCreatePost} from "./new-post.js";
-import {Logout} from "./authentication.js";
-
-const header = document.getElementById("header");
-const main = document.getElementById("main-content");
-const sideBar = document.getElementById("sidebar");
-
-function buildHeader() {
-  header.innerHTML = `<div class="header-left">
     <h1>Real time forum</h1>
   </div>
   <nav class="header-nav">
@@ -59,50 +25,81 @@ function buildHeader() {
     </div>
 `;
 
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
-    try {
-        const response = await fetch("/logout", {
-            method: "POST",
-            credentials: "include"
-        });
+	document.getElementById("logoutBtn").addEventListener("click", async () => {
+		try {
+			const response = await fetch("/logout", {
+				method: "POST",
+				credentials: "include",
+			});
 
-        if (response.ok) {
-            alert("Déconnecté avec succès !");
-        } else {
-            alert("Erreur lors de la déconnexion.");
-        }
-    } catch (err) {
-        console.error("Erreur fetch logout :", err);
-    }
-});
+			if (response.ok) {
+				alert("Déconnecté avec succès !");
+			} else {
+				alert("Erreur lors de la déconnexion.");
+			}
+		} catch (err) {
+			console.error("Erreur fetch logout :", err);
+		}
+	});
 
-
-  const postBtn = document.getElementById("new-post-btn");
-  postBtn.addEventListener("click", renderCreatePost);
-  const logoutBtn = document.getElementById("logoutBtn");
-  logoutBtn.addEventListener("click", Logout);
+	const postBtn = document.getElementById("new-post-btn");
+	postBtn.addEventListener("click", renderCreatePost);
+	const logoutBtn = document.getElementById("logoutBtn");
+	logoutBtn.addEventListener("click", Logout);
 }
 function buildSidebar() {
-  sideBar.innerHTML = `<h2>Users</h2>
+	sideBar.innerHTML = `<h2>Users</h2>
   `;
 }
 
-function buildMain() {
-  main.innerHTML = `<h2>Posts</h2>
-  <div class="posts-header">
-  			<span>Titre</span>
-  			<span>Catégorie(s)</span>
-  			<span>Texte</span>
-		</div>`
+function buildMain(posts = []) {
+	main.innerHTML = `
+    <h2>Posts</h2>
+    <div class="posts-header">
+      <span>Titre</span>
+      <span>Catégorie(s)</span>
+      <span>Texte</span>
+    </div>
+    <div id="posts-list"></div>
+  `;
+
+	const list = document.getElementById("posts-list");
+
+	posts.forEach((post) => {
+		const div = document.createElement("div");
+		div.classList.add("posts-row");
+
+		div.innerHTML = `
+      <span>${post.title}</span>
+      <span>${(post.category_ids || []).join(", ")}</span>
+      <span>${post.content}</span>
+    `;
+		div.addEventListener("click", () => postLayout(post.id));
+
+		list.appendChild(div);
+	});
 }
 
-function showApp() {
-  document.getElementById("auth-container").style.display = "none";
-  document.getElementById("app-container").style.display = "contents";
-  buildHeader();
-  buildSidebar();
-  buildMain();
+async function loadPosts() {
+	const res = await fetch("/post?id=0");
+	if (!res.ok) {
+		console.error("Erreur lors du chargement des posts");
+		return [];
+	}
+	const data = await res.json();
+	console.log(data.allposts);
+	return data.allposts;
 }
 
-export {header, main, sideBar, buildHeader, showApp};
->>>>>>> 5a682ad4cc50aeed91236e91d9737b4568b99b5f
+async function showApp() {
+	document.getElementById("auth-container").style.display = "none";
+	document.getElementById("app-container").style.display = "contents";
+	buildHeader();
+	buildSidebar();
+
+	const posts = await loadPosts();
+	console.log(posts);
+	buildMain(posts);
+}
+
+export { header, main, sideBar, buildHeader, showApp };

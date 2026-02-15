@@ -21,7 +21,16 @@ func NewCommentHandler(db *sql.DB) http.HandlerFunc {
 			}
 		}
 
-		log.Println(newComment)
+		//authorID
+
+		authorId, err := shared.GetUserIdByCookie(r, db)
+		if err != nil {
+			log.Println("<NewCommentHandler> Error cannot get cookie: ", err)
+			shared.RespondError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		newComment.AuthorID = authorId
 
 		//check data
 		if err := IsValidFormat(newComment); err != nil {
