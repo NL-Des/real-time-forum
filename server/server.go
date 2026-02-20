@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"real-time-forum/auth"
 	"real-time-forum/comments"
+	"real-time-forum/messages"
 	"real-time-forum/posts"
 	"real-time-forum/users"
 )
@@ -23,6 +24,8 @@ func Server(port string, db *sql.DB) {
 	mux.Handle("/auth/me", auth.AuthMiddleware(db)(http.HandlerFunc(auth.CurrentUserHandler(db))))
 	mux.Handle("/post", auth.AuthMiddleware(db)(http.HandlerFunc(posts.PostHandler(db))))
 	mux.Handle("/comment", auth.AuthMiddleware(db)(http.HandlerFunc(comments.NewCommentHandler(db))))
+	mux.HandleFunc("/ws", messages.WsHandler) // Pour le websocket.
+	// mux.Handle("/ws", auth.AuthMiddleware(db)(http.HandlerFunc(messages.WsHandler)))
 
 	// Quand l'utilisateur arrive, affiche mainPage.
 	mux.HandleFunc("/", users.MainPage)

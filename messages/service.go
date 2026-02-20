@@ -69,7 +69,7 @@ func CreateMessageInBDD(db *sql.DB, message []byte, senderID string, receiverID 
 }
 
 // Ecriture du message chez les utilisateurs.
-func WriteMessagesFromBddToUserScreen(db *sql.DB, conn *websocket.Conn, receiverID string, senderID string, lastChecked *time.Time) {
+func WriteMessagesFromBddToUserScreen(db *sql.DB, conn *websocket.Conn, senderID string, receiverID string, lastChecked *time.Time) {
 	// 1. On cherche les messages qui sont destinés à l'utilisateur actuel (receiverID)
 	// et qui ont été envoyés par son contact (senderID) après la dernière vérification.
 	rows, err := db.Query("SELECT Content, CreatedAt FROM messages WHERE ReceiverID  = ? AND SenderID = ? AND CreatedAt > ? ORDER BY CreatedAt ASC", receiverID, senderID, *lastChecked)

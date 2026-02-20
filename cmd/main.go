@@ -7,6 +7,7 @@ import (
 	"os"
 	"real-time-forum/auth"
 	"real-time-forum/internal/config-database"
+	"real-time-forum/messages"
 	"real-time-forum/server" // Ceci permet d'appeler la fonction qui se trouve dans le fichier.
 	"time"
 
@@ -27,6 +28,8 @@ func main() {
 	// Attribution du chemin de la database.
 	// pathDB := os.Getenv("REALTIMEFORUM_DB_PATH")
 	pathDB := "./vault/real_time_forum_database.db" // Inscrit en dur pour les tests.
+	// On crée le DSN pour SQLite (Chemin + Paramètres)
+	dsn := pathDB + "?parseTime=true"
 
 	// MARK: DB
 	// Lancement de la BDD.
@@ -43,16 +46,17 @@ func main() {
 	if statErr != nil {
 		// Création de la BDD.
 		fmt.Println("Initialazing Database...")
-		db, err = config.RunDB(pathDB)
+		db, err = config.RunDB(dsn)
 		db, err = config.InitDB(pathDB, db)
 		config.InspectDbIntegrity(db)
 		fmt.Println("Connection to Database...")
 	} else {
 		// Ouverture de la BDD.
 		fmt.Println("Connection to Database...")
-		db, err = config.RunDB(pathDB)
+		db, err = config.RunDB(dsn)
 		config.InspectDbIntegrity(db)
 	}
+	messages.Init(db)
 	if err != nil {
 		log.Fatalf("Database error: %v", err)
 	}
