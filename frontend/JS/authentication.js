@@ -1,4 +1,6 @@
 import { showApp } from "./layout.js";
+import { initChat } from "./chat.js";
+import { updateOnlineUsers } from "./sidebar.js";
 
 export function Authentication() {
 	const connectionForm = document.querySelector(".connection-form");
@@ -44,6 +46,12 @@ export function Authentication() {
 
 					// Mettre le pseudo dans le message
 					welcomeMessage.textContent = `Bienvenue, ${data.user.nickname} !`;
+					setInterval(() => {
+						fetch("/online-users")
+						.then(res => res.json()) 
+						.then(updateOnlineUsers); 
+					}, 3000);
+					initChat(data.user.nickname);
 				} else {
 					alert("Utilisateur inconnu ou mauvais mot de passe");
 				}

@@ -27,6 +27,10 @@ func Server(port string, db *sql.DB) {
 	mux.HandleFunc("/ws", messages.WsHandler) // Pour le websocket.
 	// mux.Handle("/ws", auth.AuthMiddleware(db)(http.HandlerFunc(messages.WsHandler)))
 
+	userRepo := &users.Repository{DB: db}
+	userHandler := &users.Handler{Repo: userRepo}
+	mux.Handle("/online-users", auth.AuthMiddleware(db)(http.HandlerFunc(userHandler.OnlineUsersHandler)))
+
 	// Quand l'utilisateur arrive, affiche mainPage.
 	mux.HandleFunc("/", users.MainPage)
 	// servir les fichiers static
