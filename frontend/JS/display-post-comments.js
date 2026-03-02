@@ -7,6 +7,7 @@ let comments = {};
 let author = {};
 
 async function retrievePost(postId) {
+	console.log("postId", postId);
 	try {
 		const res = await fetch(`http://localhost:8080/post?id=${postId}`);
 		if (!res.ok) {
@@ -41,10 +42,10 @@ async function postLayout(postId) {
 	<button id="returnHome">Retour à l'accueil</div>
     `;
 
-	document.getElementById('returnHome').addEventListener('click', async () => {
-  const posts = await loadPosts();
-  buildMain(posts);
-});
+	document.getElementById("returnHome").addEventListener("click", async () => {
+		const posts = await loadPosts();
+		buildMain(posts);
+	});
 
 	const commentsSection = document.getElementById("comments-card");
 
