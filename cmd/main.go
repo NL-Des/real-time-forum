@@ -53,6 +53,15 @@ func main() {
 		fmt.Println("Connection to Database...")
 		db, err = config.RunDB(pathDB)
 		config.InspectDbIntegrity(db)
+
+		// TEST : connexion fictive d'utilisateurs
+		if os.Getenv("TEST_MODE") == "1" {
+			_, err := db.Exec("UPDATE users SET userOnline = 1 WHERE id IN (3,5,7,14,16)")
+			if err != nil {
+				log.Println("Erreur TEST_MODE:", err)
+			}
+			fmt.Println("Test initialized : fake users online")
+		}
 	}
 	if err != nil {
 		log.Fatalf("Database error: %v", err)
