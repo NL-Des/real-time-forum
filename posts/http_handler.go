@@ -11,6 +11,7 @@ import (
 
 func PostHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Requête à PostHandler")
 		var newPost Post
 		var response PostResponse
 		switch r.Method {
@@ -81,6 +82,7 @@ func PostHandler(db *sql.DB) http.HandlerFunc {
 					ResponseNotif: "Sendind all posts",
 					AllPosts:      allPosts,
 				}
+
 			} else {
 				// récuperer toutes les données du post
 

@@ -102,6 +102,8 @@ func HandleWebSocket(db *sql.DB) http.HandlerFunc {
 			totalClients,
 		)
 
+		log.Print("onlineUsers : ", clients)
+
 		// Petit délai pour laisser le frontend prêt
 		time.Sleep(100 * time.Millisecond)
 

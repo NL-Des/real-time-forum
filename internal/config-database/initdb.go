@@ -16,6 +16,11 @@ func RunDB(pathDB string) (*sql.DB, error) {
 	if err != nil {
 		log.Fatalln("Error opening database : %w", err)
 	}
+
+	db.SetMaxOpenConns(0) // 0 = pas de limite
+	db.SetMaxIdleConns(0)
+	db.Exec("PRAGMA busy_timeout = 5000;")
+
 	// Vérification de la connexion, car sql.Open ne le fais pas.
 	if err = db.Ping(); err != nil {
 		log.Fatalln("Error connecting to database : %w", err)
