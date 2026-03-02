@@ -74,16 +74,18 @@ func HandleWebSocket(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		_, err = db.Exec(
-			"UPDATE users SET userOnline = 1 WHERE id = ?",
-			userID,
-		)
+		log.Printf("%s (ID: %d) est maintenant EN LIGNE\n", name, userID)
 
-		if err != nil {
-			log.Printf("Erreur mise à jour statut connexion: %v\n", err)
-		} else {
-			log.Printf("%s (ID: %d) est maintenant EN LIGNE\n", name, userID)
-		}
+		// _, err = db.Exec(
+		// 	"UPDATE users SET userOnline = 1 WHERE id = ?",
+		// 	userID,
+		// )
+
+		// if err != nil {
+		// 	log.Printf("Erreur mise à jour statut connexion: %v\n", err)
+		// } else {
+		// ligne 87 déplacée à ligne 77
+		// }
 
 		// Ajout dans la liste des clients
 
@@ -112,16 +114,16 @@ func HandleWebSocket(db *sql.DB) http.HandlerFunc {
 		defer func() {
 
 			// Mettre l'utilisateur hors ligne en base
-			_, err := db.Exec(
-				"UPDATE users SET userOnline = 0 WHERE id = ?",
-				userID,
-			)
+			// _, err := db.Exec(
+			// 	"UPDATE users SET userOnline = 0 WHERE id = ?",
+			// 	userID,
+			// )
 
-			if err != nil {
-				log.Printf("Erreur mise à jour statut déconnexion: %v\n", err)
-			} else {
-				log.Printf("%s (ID: %d) est maintenant HORS LIGNE\n", name, userID)
-			}
+			// if err != nil {
+			// 	log.Printf("Erreur mise à jour statut déconnexion: %v\n", err)
+			// } else {
+			// 	log.Printf("%s (ID: %d) est maintenant HORS LIGNE\n", name, userID)
+			// }
 
 			// Supprimer de la map des clients connectés
 			clientsMutex.Lock()
