@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"real-time-forum/messages"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -16,10 +17,18 @@ func RunDB(pathDB string) (*sql.DB, error) {
 	if err != nil {
 		log.Fatalln("Error opening database : %w", err)
 	}
+
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(5)
+	db.Exec("PRAGMA journal_mode=WAL;")
+	db.Exec("PRAGMA busy_timeout = 5000;")
+
 	// Vérification de la connexion, car sql.Open ne le fais pas.
 	if err = db.Ping(); err != nil {
 		log.Fatalln("Error connecting to database : %w", err)
 	}
+
+	messages.InitFakeOnlineUsers(db)
 	return db, nil
 }
 
