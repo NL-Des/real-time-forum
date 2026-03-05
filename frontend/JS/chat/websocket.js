@@ -1,105 +1,106 @@
 // Connexion WebSocket partagée globalement (Singleton)
 
 // Instance unique du WebSocket
-let ws = null
+let ws = null;
 
 // Intervalle utilisé pour la reconnexion automatique
-let reconnectInterval = null
+let reconnectInterval = null;
 
 // Liste des fonctions qui écoutent les messages entrants
-let messageHandlers = []
+let messageHandlers = [];
 
 // Objet représentant l’utilisateur actuellement connecté
-let currentUser = {id: null, name: null}
+let currentUser = { id: null, name: null };
 
 // initWebSocket Initialiser la connexion WebSocket
 export function initWebSocket() {
-  // Si déjà connecté, on retourne l’instance existante
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    console.log('WebSocket déjà connecté')
-    return ws
-  }
+	// Si déjà connecté, on retourne l’instance existante
+	if (ws && ws.readyState === WebSocket.OPEN) {
+		console.log("WebSocket déjà connecté");
+		return ws;
+	}
 
-  // Création d’une nouvelle connexion
-  ws = new WebSocket('ws://localhost:8080/ws')
+	// Création d’une nouvelle connexion
+	ws = new WebSocket("ws://localhost:8080/ws");
 
-  // Événement : connexion ouverte
-  ws.onopen = function () {
-    console.log('Connecté au WebSocket')
+	// Événement : connexion ouverte
+	ws.onopen = function () {
+		console.log("Connecté au WebSocket");
 
-    // Stoppe la tentative de reconnexion si active
-    clearInterval(reconnectInterval)
-  }
+		// Stoppe la tentative de reconnexion si active
+		clearInterval(reconnectInterval);
+	};
 
-  // Événement : connexion fermée
-  ws.onclose = function () {
-    console.log('Déconnecté du WebSocket')
+	// Événement : connexion fermée
+	ws.onclose = function () {
+		console.log("Déconnecté du WebSocket");
 
-    // Tentative de reconnexion toutes les 3 secondes
-    reconnectInterval = setInterval(() => {
-      console.log('Tentative de reconnexion...')
-      initWebSocket()
-    }, 3000)
-  }
+		// Tentative de reconnexion toutes les 3 secondes
+		reconnectInterval = setInterval(() => {
+			console.log("Tentative de reconnexion...");
+			initWebSocket();
+		}, 3000);
+	};
 
-  // Événement : erreur WebSocket
-  ws.onerror = function (error) {
-    console.error('Erreur WebSocket:', error)
-  }
+	// Événement : erreur WebSocket
+	ws.onerror = function (error) {
+		console.error("Erreur WebSocket:", error);
+	};
 
-  // Événement : message reçu
-  ws.onmessage = function (event) {
-    // Conversion du message JSON reçu
-    const data = JSON.parse(event.data)
+	// Événement : message reçu
+	ws.onmessage = function (event) {
+		// Conversion du message JSON reçu
+		const data = JSON.parse(event.data);
 
-    console.log('Message WebSocket reçu:', data.type)
+		console.log("<initWebSocket> Message WebSocket reçu:", data.type);
 
-    // Si le serveur envoie l'utilisateur courant
-    if (data.type === 'current_user') {
-      currentUser.id = data.id
-      currentUser.name = data.name
+		// Si le serveur envoie l'utilisateur courant
+		if (data.type === "current_user") {
+			currentUser.id = data.id;
+			currentUser.name = data.name;
 
-      console.log('Utilisateur identifié:', currentUser.name)
-    }
+			console.log("Utilisateur identifié:", currentUser.name);
+		}
 
-    // Dispatcher : appel de tous les handlers enregistrés
-    messageHandlers.forEach((handler) => {
-      try {
-        handler(data)
-      } catch (error) {
-        console.error('Erreur dans un handler:', error)
-      }
-    })
-  }
+		// Dispatcher : appel de tous les handlers enregistrés
+		messageHandlers.forEach((handler) => {
+			try {
+				handler(data);
+			} catch (error) {
+				console.error("Erreur dans un handler:", error);
+			}
+		});
+	};
 
-  return ws
+	return ws;
 }
 
 // Retourner l'utilisateur courant
 export function getCurrentUser() {
-  return currentUser
+	return currentUser;
 }
 
 // Retourner l'instance WebSocket
 export function getWebSocket() {
-  return ws
+	return ws;
 }
 
 // Ajouter un gestionnaire de messages
 export function addMessageHandler(handler) {
-  // Évite les doublons
-  if (!messageHandlers.includes(handler)) {
-    messageHandlers.push(handler)
-    console.log('Handler ajouté, total:', messageHandlers.length)
-  }
+	console.log("addMessageHandler appelée");
+	// Évite les doublons
+	if (!messageHandlers.includes(handler)) {
+		messageHandlers.push(handler);
+		console.log("Handler ajouté, total:", messageHandlers.length);
+	}
 }
 
 // Retirer un gestionnaire
 export function removeMessageHandler(handler) {
-  const index = messageHandlers.indexOf(handler)
+	const index = messageHandlers.indexOf(handler);
 
-  if (index > -1) {
-    messageHandlers.splice(index, 1)
-    console.log('Handler retiré, total:', messageHandlers.length)
-  }
+	if (index > -1) {
+		messageHandlers.splice(index, 1);
+		console.log("Handler retiré, total:", messageHandlers.length);
+	}
 }
