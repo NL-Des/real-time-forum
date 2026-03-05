@@ -64,14 +64,17 @@ func BroadcastOnlineUsers() {
 		client.mu.Lock()
 
 		// Envoi du message WebSocket (type texte)
-		err := client.Conn.WriteMessage(websocket.TextMessage, usersJSON)
+		if client.Conn != nil {
+			err := client.Conn.WriteMessage(websocket.TextMessage, usersJSON)
+			if err != nil {
+				log.Printf("Erreur envoi à client %d: %v\n", id, err)
+			}
+		}
 
 		// On déverrouille
 		client.mu.Unlock()
 
 		// Si erreur pendant l’envoi
-		if err != nil {
-			log.Printf("Erreur envoi à client %d: %v\n", id, err)
-		}
+
 	}
 }

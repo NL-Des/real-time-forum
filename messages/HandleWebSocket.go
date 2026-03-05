@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"real-time-forum/auth"
 	"sync"
 	"time"
@@ -74,18 +75,16 @@ func HandleWebSocket(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		log.Printf("%s (ID: %d) est maintenant EN LIGNE\n", name, userID)
+		_, err = db.Exec(
+			"UPDATE users SET userOnline = 1 WHERE id = ?",
+			userID,
+		)
 
-		// _, err = db.Exec(
-		// 	"UPDATE users SET userOnline = 1 WHERE id = ?",
-		// 	userID,
-		// )
-
-		// if err != nil {
-		// 	log.Printf("Erreur mise à jour statut connexion: %v\n", err)
-		// } else {
-		// ligne 87 déplacée à ligne 77
-		// }
+		if err != nil {
+			log.Printf("Erreur mise à jour statut connexion: %v\n", err)
+		} else {
+			log.Printf("%s (ID: %d) est maintenant EN LIGNE\n", name, userID)
+		}
 
 		// Ajout dans la liste des clients
 
@@ -104,6 +103,8 @@ func HandleWebSocket(db *sql.DB) http.HandlerFunc {
 			totalClients,
 		)
 
+		log.Print("onlineUsers : ", clients)
+
 		// Petit délai pour laisser le frontend prêt
 		time.Sleep(100 * time.Millisecond)
 
@@ -114,16 +115,16 @@ func HandleWebSocket(db *sql.DB) http.HandlerFunc {
 		defer func() {
 
 			// Mettre l'utilisateur hors ligne en base
-			// _, err := db.Exec(
-			// 	"UPDATE users SET userOnline = 0 WHERE id = ?",
-			// 	userID,
-			// )
+			_, err := db.Exec(
+				"UPDATE users SET userOnline = 0 WHERE id = ?",
+				userID,
+			)
 
-			// if err != nil {
-			// 	log.Printf("Erreur mise à jour statut déconnexion: %v\n", err)
-			// } else {
-			// 	log.Printf("%s (ID: %d) est maintenant HORS LIGNE\n", name, userID)
-			// }
+			if err != nil {
+				log.Printf("Erreur mise à jour statut déconnexion: %v\n", err)
+			} else {
+				log.Printf("%s (ID: %d) est maintenant HORS LIGNE\n", name, userID)
+			}
 
 			// Supprimer de la map des clients connectés
 			clientsMutex.Lock()
@@ -177,6 +178,7 @@ func HandleWebSocket(db *sql.DB) http.HandlerFunc {
 
 			// Demande d’historique
 			case "get_history":
+				log.Println("getting message history")
 				SendHistory(
 					conn,
 					userID,
@@ -186,4 +188,38 @@ func HandleWebSocket(db *sql.DB) http.HandlerFunc {
 			}
 		}
 	}
+}
+
+func InitFakeOnlineUsers(db *sql.DB) {
+
+	if os.Getenv("TEST_MODE") != "1" {
+		return
+	}
+
+	rows, err := db.Query(`
+		SELECT id, UserName
+		FROM users
+		WHERE id IN (3,5,7,14,16)
+	`)
+	if err != nil {
+		log.Println("Erreur récupération fake users:", err)
+		return
+	}
+	defer rows.Close()
+
+	clientsMutex.Lock()
+	defer clientsMutex.Unlock()
+
+	for rows.Next() {
+		var id int
+		var name string
+		rows.Scan(&id, &name)
+
+		clients[id] = &Client{
+			Conn: nil, // pas de vraie connexion
+			Name: name,
+		}
+	}
+
+	log.Println("TEST_MODE → Fake users ajoutés à la map clients")
 }
